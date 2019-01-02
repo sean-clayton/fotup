@@ -21,6 +21,8 @@
     "parcel-bundler": "^1.11.0"
   },
   "dependencies": {
+    "bs-axios": "^0.0.39",
+    "bs-css": "^8.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "reason-react": "^0.5.3"
