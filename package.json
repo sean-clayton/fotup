@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "build": "bsb -make-world && yarn parcel build index.html",
-    "dev": "npm-run-all --parallel start serve",
-    "start": "bsb -make-world -w",
+    "bsb:build": "bsb -make-world",
+    "bsb:watch": "bsb -make-world -w",
+    "start": "npm-run-all --parallel bsb:watch serve",
+    "test": "echo \"lol\" && exit 1",
     "serve": "yarn parcel index.html",
     "clean": "bsb -clean-world"
   },
