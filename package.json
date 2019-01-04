@@ -2,13 +2,16 @@
   "name": "fotup",
   "version": "1.0.0",
   "scripts": {
+    "build:fresh": "yarn clean && yarn build",
     "build": "bsb -make-world && yarn parcel build index.html",
     "bsb:build": "bsb -make-world",
     "bsb:watch": "bsb -make-world -w",
     "start": "npm-run-all --parallel bsb:watch serve",
     "test": "echo \"lol\" && exit 1",
     "serve": "yarn parcel index.html",
-    "clean": "bsb -clean-world"
+    "clean:bsb": "bsb -clean-world",
+    "clean:parcel": "rimraf dist",
+    "clean": "npm-run-all --parallel clean:bsb clean:parcel"
   },
   "keywords": [
     "BuckleScript"
@@ -18,7 +21,8 @@
   "devDependencies": {
     "bs-platform": "^4.0.14",
     "npm-run-all": "^4.1.5",
-    "parcel-bundler": "^1.11.0"
+    "parcel-bundler": "^1.11.0",
+    "rimraf": "^2.6.3"
   },
   "dependencies": {
     "bs-axios": "^0.0.39",
