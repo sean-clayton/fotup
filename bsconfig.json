@@ -1,11 +1,11 @@
 {
-  "name": "darkroom",
+  "name": "fotup",
   "version": "1.0.0",
   "sources": {
     "dir": "src",
     "subdirs": true
   },
-  "bs-dependencies": ["reason-react", "bs-css", "bs-axios"],
+  "bs-dependencies": ["reason-react", "bs-css", "bs-axios", "bs-webapi"],
   "reason": {
     "react-jsx": 2
   },
