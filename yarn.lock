@@ -1158,6 +1158,11 @@ bs-webapi@^0.13.1:
   resolved "https://registry.yarnpkg.com/bs-webapi/-/bs-webapi-0.13.1.tgz#71c560229f74b8db6d7c9dc75b620de71b1c388f"
   integrity sha512-JGngSUqyTrijGWURKbQYQE/3EDFcKszftQ0tqbaRBz6RvtIU+8Z+Lksc14aMdNpxuNiHWqhvoxbHnCvFdKLZHg==
 
+bsb-js@^1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/bsb-js/-/bsb-js-1.1.7.tgz#12cc91e974f5896b3a2aa8358419d24e56f552c3"
+  integrity sha512-FSR7d5Kb6KfVI5sLz9bEeD9pbA9F4Zbkk1xa6R9CJtyd+dJ7mIkxoXqv7cw7HWcuee+VpIhmjYzrplnFd/5Qgg==
+
 buffer-equal@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/buffer-equal/-/buffer-equal-0.0.1.tgz#91bc74b11ea405bc916bc6aa908faafa5b4aac4b"

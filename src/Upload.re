@@ -9,12 +9,18 @@ module Styles = {
       height(100.0 |> pct),
       display(flexBox),
       flexDirection(column),
-      border(px(2), dashed, hex("f00")),
       padding(1.0 |> rem),
       marginBottom(zero),
+      justifyContent(center),
+      backgroundImage(
+        linearGradient(
+          135 |> deg,
+          [(0, hex("4facfe")), (100, hex("00f2fe"))],
+        ),
+      ),
     ]);
 
-  let _active = [color(black), backgroundColor(hex("0f0"))];
+  let _active = [backgroundColor(hex("555"))];
 
   let activeStyle = style([selector("+ label", _active)]);
 
@@ -32,8 +38,10 @@ module Styles = {
         [
           cursor(`pointer),
           display(block),
-          border(2 |> px, dashed, hex("00f")),
-          padding(1.0 |> rem),
+          backgroundColor(hex("333")),
+          border(2 |> px, solid, black),
+          borderRadius(9999 |> px),
+          padding2(~v=1.0 |> rem, ~h=2.0 |> rem),
           marginBottom(1.0 |> rem),
         ],
       ),
@@ -148,8 +156,9 @@ let make = _children => {
           onDragOver={self.handle(handleDragOver)}
           onDrop={self.handle(handleDrop)}
           htmlFor="file">
-          {"Choose a file" |> ReasonReact.string}
+          {"Click, tap, or drop file here." |> ReasonReact.string}
         </label>
+        <p> {"Or paste an image!" |> ReasonReact.string} </p>
       </form>;
     },
   };

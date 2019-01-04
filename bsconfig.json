@@ -1,6 +1,5 @@
 {
   "name": "fotup",
-  "version": "1.0.0",
   "sources": {
     "dir": "src",
     "subdirs": true
@@ -9,9 +8,8 @@
   "reason": {
     "react-jsx": 2
   },
-  "bsc-flags": ["-bs-super-errors"],
   "package-specs": {
-    "module": "es6",
+    "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
