@@ -1,3 +1,5 @@
+open Webapi;
+
 module Styles = {
   open Css;
 
@@ -35,77 +37,86 @@ module Styles = {
         ],
       ),
     ]);
+
+  let fileDragging = merge([fileInput, activeStyle]);
 };
 
-let handleDragEnter = (e, _) => {
-  e |> ReactEvent.Mouse.preventDefault;
-  Js.log2("Drag Enter", e);
+type state = {
+  image: option(File.t),
+  dragging: bool,
 };
-
-let handleDragLeave = (e, _) => {
-  e |> ReactEvent.Mouse.preventDefault;
-  Js.log2("Drag Leave", e);
-};
-
-let handleDragOver = (e, _) => {
-  e |> ReactEvent.Mouse.preventDefault;
-  Js.log2("Drag Over", e);
-};
-
-let handleDrop = (e, _) => {
-  e |> ReactEvent.Mouse.preventDefault;
-  Js.log2("Drop", e);
-};
-
-let handleInputChange = (e, _) => {
-  e |> ReactEvent.Form.preventDefault;
-  Js.log2("Input Change", e);
-};
-
-let handleImageSubmit = (image, _) => {
-  Js.log2("Image Submit", image);
-};
-
-type state = {dragging: bool};
 
 type action =
+  | SetImage(File.t)
   | StartDragging
   | StopDragging;
 
 let component = ReasonReact.reducerComponent("Upload");
 
 let make = _children => {
-  ...component,
-  initialState: () => {dragging: false},
-  reducer: (action, _state) => {
-    switch (action) {
-    | StartDragging => ReasonReact.Update({dragging: true})
-    | StopDragging => ReasonReact.Update({dragging: false})
-    };
-  },
-  render: self =>
-    <form
-      onPaste={(e: ReactEvent.Clipboard.t) => {
-        let data = e->ReactEvent.Clipboard.clipboardData;
-        data##files[0]->Js.log;
-      }}
-      className=Styles.form
-      onSubmit=ReactEvent.Form.preventDefault>
-      <input
-        onChange={self.handle(handleInputChange)}
-        className=Styles.fileInput
-        id="file"
-        name="file"
-        type_="file"
-        accept="image/*,video/*"
-      />
-      <label
-        onDragEnter={self.handle(handleDragEnter)}
-        onDragLeave={self.handle(handleDragLeave)}
-        onDragOver={self.handle(handleDragOver)}
-        onDrop={self.handle(handleDrop)}
-        htmlFor="file">
-        {"Choose a file" |> ReasonReact.string}
-      </label>
-    </form>,
+  let handleImageSubmit = (image, {ReasonReact.send}) => {
+    send(StopDragging);
+    send(SetImage(image));
+  };
+
+  let handleDragEnter = (e, {ReasonReact.send}) => {
+    e |> ReactEvent.Mouse.preventDefault;
+    send(StartDragging);
+  };
+
+  let handleDragLeave = (e, {ReasonReact.send}) => {
+    e |> ReactEvent.Mouse.preventDefault;
+    send(StopDragging);
+  };
+
+  let handleDrop = (e, _self) => {
+    e |> ReactEvent.Mouse.preventDefault;
+  };
+
+  let handleInputChange = (e, _self) => {
+    e |> ReactEvent.Form.preventDefault;
+  };
+
+  {
+    ...component,
+    initialState: () => {image: None, dragging: false},
+    reducer: (action, state) => {
+      switch (action) {
+      | SetImage(image) =>
+        ReasonReact.Update({...state, image: Some(image)})
+      | StartDragging => ReasonReact.Update({...state, dragging: true})
+      | StopDragging => ReasonReact.Update({...state, dragging: false})
+      };
+    },
+    render: self => {
+      let inputClassName =
+        switch (self.state.dragging) {
+        | true => Styles.fileDragging
+        | _ => Styles.fileInput
+        };
+      <form
+        onPaste={(e: ReactEvent.Clipboard.t) => {
+          let data = e->ReactEvent.Clipboard.clipboardData;
+          data##files[0]->Js.log;
+        }}
+        className=Styles.form
+        onSubmit=ReactEvent.Form.preventDefault>
+        <input
+          onChange={self.handle(handleInputChange)}
+          className=inputClassName
+          id="file"
+          name="file"
+          type_="file"
+          accept="image/*,video/*"
+        />
+        <label
+          onDragEnter={self.handle(handleDragEnter)}
+          onDragLeave={self.handle(handleDragLeave)}
+          onDrop={self.handle(handleDrop)}
+          htmlFor="file">
+          {"Choose a file" |> ReasonReact.string}
+        </label>
+      </form>;
+    },
+  };
 };
