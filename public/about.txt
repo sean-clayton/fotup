@@ -1,3 +1,7 @@
 A simple little file uploading client using the put.re API.
 
 Source code: https://github.com/sean-clayton/fotup
+
+Icon Attribution:
+
+Icon made by Becris www.flaticon.com is licensed by CC 3.0 BY
