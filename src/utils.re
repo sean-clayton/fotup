@@ -37,7 +37,7 @@ module FormData = {
 
 module Location = {
   [@bs.val] [@bs.scope ("window", "location")]
-  external assign: string => string = "assign";
+  external assign: string => unit = "assign";
 };
 
 let redirect = newPath => {

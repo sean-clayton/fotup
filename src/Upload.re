@@ -42,15 +42,9 @@ module Styles = {
   let fileDragging = merge([fileInput, activeStyle]);
 };
 
-type maybeFile = option(File.t);
-
-type state = {
-  image: maybeFile,
-  dragging: bool,
-};
+type state = {dragging: bool};
 
 type action =
-  | SetImage(maybeFile)
   | StartDragging
   | StopDragging;
 
@@ -58,8 +52,7 @@ let component = ReasonReact.reducerComponent("Upload");
 
 let make = _children => {
   let handleFileUploaded = response => {
-    let _ = redirect(response##data##link);
-    ();
+    redirect(response##data##link);
   };
 
   let uploadFile = (file: File.t) => {
@@ -69,15 +62,43 @@ let make = _children => {
         |> then_(response =>
              switch (response##status) {
              | status when status < 400 =>
-               let data = response##data;
-               let _ = handleFileUploaded(data);
-               resolve();
+               response##data |> handleFileUploaded |> resolve
              | _ => resolve()
              }
            )
         |> catch(error => resolve(Js.log(error)))
       );
     ();
+  };
+
+  let handlePaste = (e, _self) => {
+    e |> ReactEvent.Clipboard.preventDefault;
+    let data =
+      e
+      |> ReactEvent.Clipboard.clipboardData
+      |> DataTransfer.dataTransferFromJs;
+    switch (data.files) {
+    | [|file|] => uploadFile(file)
+    | _ => ()
+    };
+  };
+
+  let handleInputChange = (e, _self) => {
+    e |> ReactEvent.Form.preventDefault;
+    switch (e |> ReactEvent.Form.target |> Target.files) {
+    | [|file|] => file |> uploadFile
+    | _ => ()
+    };
+  };
+
+  let handleDrop = (e, {ReasonReact.send}) => {
+    e |> ReactEvent.Mouse.preventDefault;
+    send(StopDragging);
+    let data = e |> MouseEvent.dataTransfer |> DataTransfer.dataTransferFromJs;
+    switch (data.files) {
+    | [|file|] => file |> uploadFile
+    | _ => ()
+    };
   };
 
   let handleDragEnter = (e, {ReasonReact.send}) => {
@@ -94,38 +115,13 @@ let make = _children => {
     e |> ReactEvent.Mouse.preventDefault;
   };
 
-  let handleDrop = (e, {ReasonReact.send}) => {
-    e |> ReactEvent.Mouse.preventDefault;
-    e |> ReactEvent.Mouse.persist;
-    send(StopDragging);
-    let data = e |> MouseEvent.dataTransfer |> DataTransfer.dataTransferFromJs;
-    switch (data.files) {
-    | [|file|] => file |> uploadFile
-    | _ => ()
-    };
-  };
-
-  let handleInputChange = (e, _self) => {
-    e |> ReactEvent.Form.preventDefault;
-    e |> ReactEvent.Form.persist;
-    switch (e |> ReactEvent.Form.target |> Target.files) {
-    | [|file|] => file |> uploadFile
-    | _ => ()
-    };
-  };
-
   {
     ...component,
-    initialState: () => {image: None, dragging: false},
-    reducer: (action, state) => {
+    initialState: () => {dragging: false},
+    reducer: (action, _state) => {
       switch (action) {
-      | SetImage(maybeFile) =>
-        switch (maybeFile) {
-        | Some(file) => ReasonReact.Update({...state, image: Some(file)})
-        | _ => ReasonReact.NoUpdate
-        }
-      | StartDragging => ReasonReact.Update({...state, dragging: true})
-      | StopDragging => ReasonReact.Update({...state, dragging: false})
+      | StartDragging => ReasonReact.Update({dragging: true})
+      | StopDragging => ReasonReact.Update({dragging: false})
       };
     },
     render: self => {
@@ -135,18 +131,7 @@ let make = _children => {
         | _ => Styles.fileInput
         };
       <form
-        onPaste={(e: ReactEvent.Clipboard.t) => {
-          e |> ReactEvent.Clipboard.persist;
-          e |> ReactEvent.Clipboard.preventDefault;
-          let data =
-            e
-            |> ReactEvent.Clipboard.clipboardData
-            |> DataTransfer.dataTransferFromJs;
-          switch (data.files) {
-          | [|file|] => uploadFile(file)
-          | _ => ()
-          };
-        }}
+        onPaste={self.handle(handlePaste)}
         className=Styles.form
         onSubmit=ReactEvent.Form.preventDefault>
         <input
