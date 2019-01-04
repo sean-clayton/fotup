@@ -32,10 +32,11 @@ module FormData = {
   [@bs.send] external set: (Js.t('a), string, 'a) => Js.t('a) = "set";
 };
 
-[@bs.val] [@bs.scope ("window", "location")]
-external href: Js.t('a) = "href";
+module Location = {
+  [@bs.val] [@bs.scope ("window", "location")]
+  external assign: string => string = "assign";
+};
 
 let redirect = newPath => {
-  let href = ref(href);
-  href := newPath;
+  Location.assign(newPath);
 };

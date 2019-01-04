@@ -57,13 +57,21 @@ type action =
 let component = ReasonReact.reducerComponent("Upload");
 
 let make = _children => {
-  let handleFileSubmit = (file: File.t) => {
+  let handleFileUploaded = response => {
+    let _ = redirect(response##data##link);
+    ();
+  };
+
+  let uploadFile = (file: File.t) => {
     let _ =
       Js.Promise.(
         Api.uploadFile(file)
         |> then_(response =>
              switch (response##status) {
-             | 200 => resolve(redirect(response##data##data##link))
+             | status when status < 400 =>
+               let data = response##data;
+               let _ = handleFileUploaded(data);
+               resolve();
              | _ => resolve()
              }
            )
@@ -127,7 +135,7 @@ let make = _children => {
             |> ReactEvent.Clipboard.clipboardData
             |> DataTransfer.dataTransferFromJs;
           switch (data.files) {
-          | [|file|] => handleFileSubmit(file)
+          | [|file|] => uploadFile(file)
           | _ => ()
           };
         }}
