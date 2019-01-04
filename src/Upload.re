@@ -11,6 +11,10 @@ module Styles = {
       marginBottom(zero),
     ]);
 
+  let _active = [color(black), backgroundColor(hex("0f0"))];
+
+  let activeStyle = style(_active);
+
   let fileInput =
     style([
       width(0.1 |> pxFloat),
@@ -19,10 +23,7 @@ module Styles = {
       overflow(hidden),
       position(absolute),
       zIndex(-1),
-      selector(
-        ":focus + label, + label:hover",
-        [backgroundColor(hex("0f0"))],
-      ),
+      selector(":focus + label, + label:hover", _active),
       selector(
         "+ label",
         [
@@ -34,28 +35,28 @@ module Styles = {
         ],
       ),
     ]);
-
-  let button = style([padding(0.5 |> rem)]);
 };
-
-let component = ReasonReact.statelessComponent("Upload");
 
 let handleDragEnter = (e, _) => {
   e |> ReactEvent.Mouse.preventDefault;
   Js.log2("Drag Enter", e);
 };
+
 let handleDragLeave = (e, _) => {
   e |> ReactEvent.Mouse.preventDefault;
   Js.log2("Drag Leave", e);
 };
+
 let handleDragOver = (e, _) => {
   e |> ReactEvent.Mouse.preventDefault;
   Js.log2("Drag Over", e);
 };
+
 let handleDrop = (e, _) => {
   e |> ReactEvent.Mouse.preventDefault;
   Js.log2("Drop", e);
 };
+
 let handleInputChange = (e, _) => {
   e |> ReactEvent.Form.preventDefault;
   Js.log2("Input Change", e);
@@ -65,8 +66,23 @@ let handleImageSubmit = (image, _) => {
   Js.log2("Image Submit", image);
 };
 
+type state = {dragging: bool};
+
+type action =
+  | StartDragging
+  | StopDragging;
+
+let component = ReasonReact.reducerComponent("Upload");
+
 let make = _children => {
   ...component,
+  initialState: () => {dragging: false},
+  reducer: (action, _state) => {
+    switch (action) {
+    | StartDragging => ReasonReact.Update({dragging: true})
+    | StopDragging => ReasonReact.Update({dragging: false})
+    };
+  },
   render: self =>
     <form
       onPaste={(e: ReactEvent.Clipboard.t) => {
@@ -81,7 +97,7 @@ let make = _children => {
         id="file"
         name="file"
         type_="file"
-        accept=".bmp,.gif,.jpg,.jpeg,.png,.webm,.mp4"
+        accept="image/*,video/*"
       />
       <label
         onDragEnter={self.handle(handleDragEnter)}
@@ -91,8 +107,5 @@ let make = _children => {
         htmlFor="file">
         {"Choose a file" |> ReasonReact.string}
       </label>
-      <button className=Styles.button>
-        {"Upload!" |> ReasonReact.string}
-      </button>
     </form>,
 };
