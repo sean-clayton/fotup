@@ -5,13 +5,24 @@ module Option = {
     | None => raise(Invalid_argument("unwrapUnsafely called on None"));
 };
 
-module File = {
+module DataTransfer = {
+  type dropEffect = string;
+
+  type effectAllowed = string;
+
+  type file = Webapi.File.t;
+
+  type files = array(file);
+
+  type item = {kind: string};
+
+  type items = array(item);
+
   [@bs.deriving jsConverter]
-  type file = {
-    lastModified: int,
-    lastModifiedDate: Js.Date.t,
-    name: string,
-    size: int,
-    _type: string,
+  type dataTransfer = {
+    dropEffect,
+    effectAllowed,
+    files,
+    items,
   };
 };

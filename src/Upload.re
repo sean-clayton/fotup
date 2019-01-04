@@ -1,4 +1,5 @@
 open Webapi;
+open Utils;
 
 module Styles = {
   open Css;
@@ -15,7 +16,7 @@ module Styles = {
 
   let _active = [color(black), backgroundColor(hex("0f0"))];
 
-  let activeStyle = style(_active);
+  let activeStyle = style([selector("+ label", _active)]);
 
   let fileInput =
     style([
@@ -41,22 +42,29 @@ module Styles = {
   let fileDragging = merge([fileInput, activeStyle]);
 };
 
+type maybeFile = option(File.t);
+
 type state = {
-  image: option(File.t),
+  image: maybeFile,
   dragging: bool,
 };
 
 type action =
-  | SetImage(File.t)
+  | SetImage(maybeFile)
   | StartDragging
   | StopDragging;
 
 let component = ReasonReact.reducerComponent("Upload");
 
 let make = _children => {
-  let handleImageSubmit = (image, {ReasonReact.send}) => {
-    send(StopDragging);
-    send(SetImage(image));
+  let handleFileSubmit = (file: File.t) => {
+    let _ =
+      Js.Promise.(
+        Api.uploadFile(file)
+        |> then_(response => resolve(Js.log(response##data)))
+        |> catch(error => resolve(Js.log(error)))
+      );
+    ();
   };
 
   let handleDragEnter = (e, {ReasonReact.send}) => {
@@ -69,12 +77,20 @@ let make = _children => {
     send(StopDragging);
   };
 
-  let handleDrop = (e, _self) => {
+  let handleDragOver = (e, _self) => {
     e |> ReactEvent.Mouse.preventDefault;
+  };
+
+  let handleDrop = (e, {ReasonReact.send}) => {
+    e |> ReactEvent.Mouse.preventDefault;
+    send(StopDragging);
+    let file: maybeFile = [%raw "e.dataTransfer.files[0]"];
+    file |> Js.log2("File");
   };
 
   let handleInputChange = (e, _self) => {
     e |> ReactEvent.Form.preventDefault;
+    e |> Js.log2("InputChange");
   };
 
   {
@@ -82,8 +98,11 @@ let make = _children => {
     initialState: () => {image: None, dragging: false},
     reducer: (action, state) => {
       switch (action) {
-      | SetImage(image) =>
-        ReasonReact.Update({...state, image: Some(image)})
+      | SetImage(maybeFile) =>
+        switch (maybeFile) {
+        | Some(file) => ReasonReact.Update({...state, image: Some(file)})
+        | _ => ReasonReact.NoUpdate
+        }
       | StartDragging => ReasonReact.Update({...state, dragging: true})
       | StopDragging => ReasonReact.Update({...state, dragging: false})
       };
@@ -96,8 +115,16 @@ let make = _children => {
         };
       <form
         onPaste={(e: ReactEvent.Clipboard.t) => {
-          let data = e->ReactEvent.Clipboard.clipboardData;
-          data##files[0]->Js.log;
+          e |> ReactEvent.Clipboard.persist;
+          e |> ReactEvent.Clipboard.preventDefault;
+          let data =
+            e
+            |> ReactEvent.Clipboard.clipboardData
+            |> DataTransfer.dataTransferFromJs;
+          switch (data.files) {
+          | [|file|] => handleFileSubmit(file)
+          | _ => ()
+          };
         }}
         className=Styles.form
         onSubmit=ReactEvent.Form.preventDefault>
@@ -112,6 +139,7 @@ let make = _children => {
         <label
           onDragEnter={self.handle(handleDragEnter)}
           onDragLeave={self.handle(handleDragLeave)}
+          onDragOver={self.handle(handleDragOver)}
           onDrop={self.handle(handleDrop)}
           htmlFor="file">
           {"Choose a file" |> ReasonReact.string}
