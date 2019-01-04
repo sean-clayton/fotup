@@ -3,19 +3,25 @@
   "version": "1.0.0",
   "scripts": {
     "build:fresh": "yarn clean && yarn build",
-    "build": "yarn parcel build src/index.html --detailed-report",
-    "start": "yarn parcel src/index.html --open --https",
+    "build": "yarn parcel build src/index.html --public-url / --detailed-report",
+    "start": "yarn parcel src/index.html --public-url / --open",
     "test": "echo \"lol\" && exit 1",
     "clean": "rimraf dist"
   },
   "author": "Sean-Patrick Ortencio Clayton",
   "license": "ISC",
+  "cache": {
+    "inDev": true,
+    "strategy": "inject",
+    "swSrc": "./src/sw.js",
+    "swDest": "service-worker.js"
+  },
   "devDependencies": {
     "bs-platform": "^4.0.15",
     "bsb-js": "^1.1.7",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.11.0",
-    "parcel-plugin-sw-precache": "^1.0.3",
+    "parcel-plugin-sw-cache": "^0.2.6",
     "rimraf": "^2.6.3"
   },
   "dependencies": {
