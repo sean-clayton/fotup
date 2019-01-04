@@ -61,7 +61,12 @@ let make = _children => {
     let _ =
       Js.Promise.(
         Api.uploadFile(file)
-        |> then_(response => resolve(Js.log(response##data)))
+        |> then_(response =>
+             switch (response##status) {
+             | 200 => resolve(redirect(response##data##data##link))
+             | _ => resolve()
+             }
+           )
         |> catch(error => resolve(Js.log(error)))
       );
     ();

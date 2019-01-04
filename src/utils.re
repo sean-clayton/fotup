@@ -26,3 +26,16 @@ module DataTransfer = {
     items,
   };
 };
+
+module FormData = {
+  [@bs.new] external create: unit => Js.t('a) = "FormData";
+  [@bs.send] external set: (Js.t('a), string, 'a) => Js.t('a) = "set";
+};
+
+[@bs.val] [@bs.scope ("window", "location")]
+external href: Js.t('a) = "href";
+
+let redirect = newPath => {
+  let href = ref(href);
+  href := newPath;
+};

@@ -1,17 +1,9 @@
+open Utils;
+
 let uploadEndpoint = "https://api.put.re/upload/";
 
-let unsafeCreateFormData = [%raw
-  {|
-  function(file) {
-    let data = new FormData();
-    data.append('file', file);
-
-    return data;
-  }
-|}
-];
-
 let uploadFile = (file: Webapi.File.t) => {
-  let formData = unsafeCreateFormData(file);
+  let formData = FormData.create();
+  let _ = formData->FormData.set("file", file);
   Axios.postData(uploadEndpoint, formData);
 };
