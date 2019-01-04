@@ -6,21 +6,18 @@ module Styles = {
 
   let form =
     style([
+      fontSize(20 |> px),
       height(100.0 |> pct),
       display(flexBox),
       flexDirection(column),
-      padding(1.0 |> rem),
+      padding2(~v=zero, ~h=2.0 |> rem),
       marginBottom(zero),
+      textAlign(center),
       justifyContent(center),
-      backgroundImage(
-        linearGradient(
-          135 |> deg,
-          [(0, hex("4facfe")), (100, hex("00f2fe"))],
-        ),
-      ),
+      textShadow(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.666)),
     ]);
 
-  let _active = [backgroundColor(hex("555"))];
+  let _active = [borderStyle(dashed), backgroundColor(transparent)];
 
   let activeStyle = style([selector("+ label", _active)]);
 
@@ -38,10 +35,10 @@ module Styles = {
         [
           cursor(`pointer),
           display(block),
-          backgroundColor(hex("333")),
-          border(2 |> px, solid, black),
-          borderRadius(9999 |> px),
-          padding2(~v=1.0 |> rem, ~h=2.0 |> rem),
+          backgroundColor(hex("606060")),
+          border(2 |> px, solid, rgba(255, 255, 255, 0.5)),
+          borderRadius(3 |> px),
+          padding2(~v=3.0 |> rem, ~h=2.0 |> rem),
           marginBottom(1.0 |> rem),
         ],
       ),
@@ -156,7 +153,7 @@ let make = _children => {
           onDragOver={self.handle(handleDragOver)}
           onDrop={self.handle(handleDrop)}
           htmlFor="file">
-          {"Click, tap, or drop file here." |> ReasonReact.string}
+          {"Tap, click, or drop a file here." |> ReasonReact.string}
         </label>
         <p> {"Or paste an image!" |> ReasonReact.string} </p>
       </form>;
