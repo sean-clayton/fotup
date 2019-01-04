@@ -96,13 +96,18 @@ let make = _children => {
 
   let handleDrop = (e, {ReasonReact.send}) => {
     e |> ReactEvent.Mouse.preventDefault;
+    e |> ReactEvent.Mouse.persist;
     send(StopDragging);
-    let file: maybeFile = [%raw "e.dataTransfer.files[0]"];
-    file |> Js.log2("File");
+    let data = e |> MouseEvent.dataTransfer |> DataTransfer.dataTransferFromJs;
+    switch (data.files) {
+    | [|file|] => file |> uploadFile
+    | _ => ()
+    };
   };
 
   let handleInputChange = (e, _self) => {
     e |> ReactEvent.Form.preventDefault;
+    e |> ReactEvent.Form.persist;
     e |> Js.log2("InputChange");
   };
 

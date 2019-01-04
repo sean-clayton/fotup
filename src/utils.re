@@ -18,12 +18,15 @@ module DataTransfer = {
 
   type items = array(item);
 
+  type types = array(string);
+
   [@bs.deriving jsConverter]
   type dataTransfer = {
     dropEffect,
     effectAllowed,
     files,
     items,
+    types,
   };
 };
 
@@ -39,4 +42,10 @@ module Location = {
 
 let redirect = newPath => {
   Location.assign(newPath);
+};
+
+module MouseEvent = {
+  type t = ReactEvent.Mouse.t;
+
+  [@bs.get] external dataTransfer: t => Js.t({..}) = "";
 };
