@@ -108,7 +108,10 @@ let make = _children => {
   let handleInputChange = (e, _self) => {
     e |> ReactEvent.Form.preventDefault;
     e |> ReactEvent.Form.persist;
-    e |> Js.log2("InputChange");
+    switch (e |> ReactEvent.Form.target |> Target.files) {
+    | [|file|] => file |> uploadFile
+    | _ => ()
+    };
   };
 
   {

@@ -49,3 +49,9 @@ module MouseEvent = {
 
   [@bs.get] external dataTransfer: t => Js.t({..}) = "";
 };
+
+module Target = {
+  type t = Js.t({.});
+
+  [@bs.get] external files: t => array(Webapi.File.t) = "";
+};
