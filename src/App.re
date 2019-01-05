@@ -127,11 +127,7 @@ let make = _ => {
         <Upload
           uploadProgress={self.state.uploadProgress}
           dragging={self.state.dragging}
-          handleDragEnter={self.handle(handleDragEnter)}
-          handleDragLeave={self.handle(handleDragLeave)}
-          handleDragOver={self.handle(handleDragOver)}
           handleInputChange={self.handle(handleInputChange)}
-          handleDrop={self.handle(handleDrop)}
         />
         <Footer />
       </main>,

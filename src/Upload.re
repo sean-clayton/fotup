@@ -45,17 +45,7 @@ module Styles = {
 
 let component = ReasonReact.statelessComponent("Upload");
 
-let make =
-    (
-      ~handleDragEnter,
-      ~handleDragLeave,
-      ~handleDragOver,
-      ~handleDrop,
-      ~handleInputChange,
-      ~uploadProgress,
-      ~dragging,
-      _children,
-    ) => {
+let make = (~handleInputChange, ~uploadProgress, ~dragging, _children) => {
   {
     ...component,
     render: _self => {
