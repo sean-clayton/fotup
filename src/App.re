@@ -96,8 +96,9 @@ let make = _ => {
     send(StopDragging);
   };
 
-  let handleDragOver = (e, _self) => {
+  let handleDragOver = (e, {ReasonReact.send}) => {
     e |> ReactEvent.Mouse.preventDefault;
+    send(StartDragging);
   };
 
   {
@@ -115,7 +116,13 @@ let make = _ => {
       };
     },
     render: self =>
-      <main onPaste={self.handle(handlePaste)} className=Styles.main>
+      <main
+        onDragEnter={self.handle(handleDragEnter)}
+        onDragLeave={self.handle(handleDragLeave)}
+        onDragOver={self.handle(handleDragOver)}
+        onDrop={self.handle(handleDrop)}
+        onPaste={self.handle(handlePaste)}
+        className=Styles.main>
         <Logo />
         <Upload
           uploadProgress={self.state.uploadProgress}
@@ -126,7 +133,7 @@ let make = _ => {
           handleInputChange={self.handle(handleInputChange)}
           handleDrop={self.handle(handleDrop)}
         />
-        <About />
+        <Footer />
       </main>,
   };
 };

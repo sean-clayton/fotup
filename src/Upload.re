@@ -3,6 +3,7 @@ module Styles = {
 
   let form =
     style([
+      flex(3),
       fontSize(20 |> px),
       display(flexBox),
       flexDirection(column),
@@ -79,14 +80,7 @@ let make =
           type_="file"
           accept="image/*,video/*"
         />
-        <label
-          onDragEnter=handleDragEnter
-          onDragLeave=handleDragLeave
-          onDragOver=handleDragOver
-          onDrop=handleDrop
-          htmlFor="file">
-          {label |> ReasonReact.string}
-        </label>
+        <label htmlFor="file"> {label |> ReasonReact.string} </label>
         <p> {"Or paste an image!" |> ReasonReact.string} </p>
       </form>;
     },
