@@ -11,7 +11,6 @@ module Styles = {
       flexDirection(column),
       padding2(~v=zero, ~h=2.0 |> rem),
       marginBottom(zero),
-      textAlign(center),
       justifyContent(center),
       textShadow(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.666)),
     ]);

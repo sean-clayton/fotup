@@ -12,7 +12,6 @@
   "license": "ISC",
   "staticPath": "public",
   "cache": {
-    "inDev": true,
     "strategy": "inject",
     "swSrc": "./src/sw.js",
     "swDest": "service-worker.js"

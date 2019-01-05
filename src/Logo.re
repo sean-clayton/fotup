@@ -7,7 +7,6 @@ module Styles = {
     style([
       display(flexBox),
       justifyContent(center),
-      textAlign(center),
       alignItems(center),
       fontSize(3.0 |> em),
       margin3(~top=2.0 |> rem, ~bottom=2.0 |> rem, ~h=zero),

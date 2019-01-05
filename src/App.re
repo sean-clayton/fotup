@@ -7,6 +7,7 @@ module Styles = {
       display(flexBox),
       flexDirection(column),
       justifyContent(center),
+      textAlign(center),
     ]);
 };
 
@@ -14,5 +15,6 @@ let component = ReasonReact.statelessComponent("App");
 
 let make = _ => {
   ...component,
-  render: _ => <main className=Styles.main> <Logo /> <Upload /> </main>,
+  render: _ =>
+    <main className=Styles.main> <Logo /> <Upload /> <About /> </main>,
 };
