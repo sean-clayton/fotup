@@ -51,7 +51,10 @@ let make = _ => {
              | _ => resolve()
              }
            )
-        |> catch(error => resolve(Js.log(error)))
+        |> catch(error => {
+             send(CompleteUploading);
+             resolve(Js.log(error));
+           })
       );
     ();
   };
