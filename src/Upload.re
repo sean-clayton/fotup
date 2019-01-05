@@ -29,15 +29,33 @@ module Styles = {
       selector(
         "+ label",
         [
+          position(relative),
           cursor(`pointer),
-          display(block),
+          display(flexBox),
+          alignItems(center),
+          justifyContent(center),
           backgroundColor(hex("606060")),
           border(2 |> px, solid, rgba(255, 255, 255, 0.5)),
           borderRadius(3 |> px),
-          padding2(~v=3.0 |> rem, ~h=2.0 |> rem),
+          height(10.0 |> rem),
           marginBottom(1.0 |> rem),
         ],
       ),
+    ]);
+
+  let progress =
+    style([
+      display(flexBox),
+      alignItems(center),
+      justifyContent(center),
+      position(absolute),
+      top(zero),
+      left(zero),
+      right(zero),
+      bottom(zero),
+      backgroundColor(rgba(0, 255, 0, 0.25)),
+      zIndex(0),
+      transition(~duration=100, ~timingFunction=easeInOut, "transform"),
     ]);
 
   let fileDragging = merge([fileInput, activeStyle]);
@@ -45,15 +63,24 @@ module Styles = {
 
 let component = ReasonReact.statelessComponent("Upload");
 
-let make = (~handleInputChange, ~uploadProgress, ~dragging, _children) => {
+let make =
+    (~handleInputChange, ~uploadProgress, ~dragging, ~uploadFailed, _children) => {
   {
     ...component,
     render: _self => {
       let disabled = uploadProgress !== 0.0;
+      let progress = (uploadProgress *. 100.0)->int_of_float->string_of_int;
+      let progressStyle =
+        ReactDOMRe.Style.make(
+          ~transform="scaleX(" ++ uploadProgress->Js.Float.toString ++ ")",
+          ~transformOrigin="left",
+          (),
+        );
       let label =
-        switch (disabled) {
-        | true => "Upload in progress..."
-        | _ => "Tap, click, or drop a file here."
+        switch (disabled, uploadFailed) {
+        | (true, false) => "Upload in progress... (" ++ progress ++ "%)"
+        | (true, true) => "Upload failed!"
+        | (false, _) => "Tap, click, or drop a file here."
         };
       let inputClassName =
         switch (dragging) {
@@ -70,7 +97,14 @@ let make = (~handleInputChange, ~uploadProgress, ~dragging, _children) => {
           type_="file"
           accept="image/*,video/*"
         />
-        <label htmlFor="file"> {label |> ReasonReact.string} </label>
+        <label htmlFor="file">
+          {switch (uploadProgress) {
+           | x when x > 0.0 =>
+             <span style=progressStyle className=Styles.progress />
+           | _ => ReasonReact.null
+           }}
+          <span> {label |> ReasonReact.string} </span>
+        </label>
         <p> {"Or paste an image!" |> ReasonReact.string} </p>
       </form>;
     },

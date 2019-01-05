@@ -17,6 +17,7 @@ module Styles = {
 type state = {
   uploadProgress: float,
   dragging: bool,
+  uploadFailed: bool,
 };
 
 type action =
@@ -24,6 +25,7 @@ type action =
   | StopDragging
   | StartUploading
   | CompleteUploading
+  | UploadFailed
   | UploadProgress(float);
 
 let component = ReasonReact.reducerComponent("App");
@@ -34,8 +36,10 @@ let make = _ => {
     Js.log(response);
   };
 
-  let handleUploadProgress = (a, _self) => {
-    Js.log(a);
+  let handleUploadProgress = (a, {ReasonReact.send}) => {
+    let e = a |> ProgressEvent.progressEventFromJs;
+    let percent = e.loaded->float_of_int /. e.total->float_of_int;
+    send(UploadProgress(percent));
   };
 
   let uploadFile = (file: File.t, {ReasonReact.handle, ReasonReact.send}) => {
@@ -106,16 +110,26 @@ let make = _ => {
 
   {
     ...component,
-    initialState: () => {uploadProgress: 0.0, dragging: false},
+    initialState: () => {
+      uploadFailed: false,
+      uploadProgress: 0.0,
+      dragging: false,
+    },
     reducer: (action, state) => {
       switch (action) {
       | StartDragging => ReasonReact.Update({...state, dragging: true})
       | StopDragging => ReasonReact.Update({...state, dragging: false})
       | UploadProgress(percent) =>
         ReasonReact.Update({...state, uploadProgress: percent})
-      | StartUploading => ReasonReact.Update({...state, uploadProgress: 0.5})
+      | StartUploading => ReasonReact.Update({...state, uploadFailed: false})
       | CompleteUploading =>
         ReasonReact.Update({...state, uploadProgress: 0.0})
+      | UploadFailed =>
+        ReasonReact.Update({
+          ...state,
+          uploadFailed: true,
+          uploadProgress: 0.0,
+        })
       };
     },
     render: self =>
@@ -128,6 +142,7 @@ let make = _ => {
         className=Styles.main>
         <Logo />
         <Upload
+          uploadFailed={self.state.uploadFailed}
           uploadProgress={self.state.uploadProgress}
           dragging={self.state.dragging}
           handleInputChange={self.handle(handleInputChange)}

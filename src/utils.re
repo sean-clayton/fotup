@@ -61,8 +61,8 @@ module ProgressEvent = {
   type loaded = int;
   type total = int;
 
-  [@bs.deriving abstract]
-  type t = {
+  [@bs.deriving jsConverter]
+  type progressEvent = {
     lengthComputable,
     loaded,
     total,
