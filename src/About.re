@@ -36,7 +36,7 @@ let make = _children => {
         </a>
       </p>
       <p className=Styles.attribution>
-        {"Icon made by Becris www.flaticon.com is licensed by CC 3.0 BY"
+        {"Icon made by Becris from www.flaticon.com is licensed by CC 3.0 BY"
          |> ReasonReact.string}
       </p>
     </article>,

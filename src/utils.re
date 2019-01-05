@@ -55,3 +55,16 @@ module Target = {
 
   [@bs.get] external files: t => array(Webapi.File.t) = "";
 };
+
+module ProgressEvent = {
+  type lengthComputable = bool;
+  type loaded = int;
+  type total = int;
+
+  [@bs.deriving abstract]
+  type t = {
+    lengthComputable,
+    loaded,
+    total,
+  };
+};

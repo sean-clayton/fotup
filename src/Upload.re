@@ -1,6 +1,3 @@
-open Webapi;
-open Utils;
-
 module Styles = {
   open Css;
 
@@ -45,100 +42,37 @@ module Styles = {
   let fileDragging = merge([fileInput, activeStyle]);
 };
 
-type state = {dragging: bool};
+let component = ReasonReact.statelessComponent("Upload");
 
-type action =
-  | StartDragging
-  | StopDragging;
-
-let component = ReasonReact.reducerComponent("Upload");
-
-let make = _children => {
-  let handleFileUploaded = response => {
-    redirect(response##data##link);
-  };
-
-  let uploadFile = (file: File.t) => {
-    let _ =
-      Js.Promise.(
-        Api.uploadFile(file)
-        |> then_(response =>
-             switch (response##status) {
-             | status when status < 400 =>
-               response##data |> handleFileUploaded |> resolve
-             | _ => resolve()
-             }
-           )
-        |> catch(error => resolve(Js.log(error)))
-      );
-    ();
-  };
-
-  let handlePaste = (e, _self) => {
-    e |> ReactEvent.Clipboard.preventDefault;
-    let data =
-      e
-      |> ReactEvent.Clipboard.clipboardData
-      |> DataTransfer.dataTransferFromJs;
-    switch (data.files) {
-    | [|file|] => uploadFile(file)
-    | _ => ()
-    };
-  };
-
-  let handleInputChange = (e, _self) => {
-    e |> ReactEvent.Form.preventDefault;
-    switch (e |> ReactEvent.Form.target |> Target.files) {
-    | [|file|] => file |> uploadFile
-    | _ => ()
-    };
-  };
-
-  let handleDrop = (e, {ReasonReact.send}) => {
-    e |> ReactEvent.Mouse.preventDefault;
-    send(StopDragging);
-    let data = e |> MouseEvent.dataTransfer |> DataTransfer.dataTransferFromJs;
-    switch (data.files) {
-    | [|file|] => file |> uploadFile
-    | _ => ()
-    };
-  };
-
-  let handleDragEnter = (e, {ReasonReact.send}) => {
-    e |> ReactEvent.Mouse.preventDefault;
-    send(StartDragging);
-  };
-
-  let handleDragLeave = (e, {ReasonReact.send}) => {
-    e |> ReactEvent.Mouse.preventDefault;
-    send(StopDragging);
-  };
-
-  let handleDragOver = (e, _self) => {
-    e |> ReactEvent.Mouse.preventDefault;
-  };
-
+let make =
+    (
+      ~handleDragEnter,
+      ~handleDragLeave,
+      ~handleDragOver,
+      ~handleDrop,
+      ~handleInputChange,
+      ~uploadProgress,
+      ~dragging,
+      _children,
+    ) => {
   {
     ...component,
-    initialState: () => {dragging: false},
-    reducer: (action, _state) => {
-      switch (action) {
-      | StartDragging => ReasonReact.Update({dragging: true})
-      | StopDragging => ReasonReact.Update({dragging: false})
-      };
-    },
-    render: self => {
+    render: _self => {
+      let disabled = uploadProgress !== 0.0;
+      let label =
+        switch (disabled) {
+        | true => "Upload in progress..."
+        | _ => "Tap, click, or drop a file here."
+        };
       let inputClassName =
-        switch (self.state.dragging) {
+        switch (dragging) {
         | true => Styles.fileDragging
         | _ => Styles.fileInput
         };
-      <form
-        onPaste={self.handle(handlePaste)}
-        className=Styles.form
-        onSubmit=ReactEvent.Form.preventDefault>
+      <form className=Styles.form onSubmit=ReactEvent.Form.preventDefault>
         <input
-          onChange={self.handle(handleInputChange)}
+          disabled
+          onChange=handleInputChange
           className=inputClassName
           id="file"
           name="file"
@@ -146,12 +80,12 @@ let make = _children => {
           accept="image/*,video/*"
         />
         <label
-          onDragEnter={self.handle(handleDragEnter)}
-          onDragLeave={self.handle(handleDragLeave)}
-          onDragOver={self.handle(handleDragOver)}
-          onDrop={self.handle(handleDrop)}
+          onDragEnter=handleDragEnter
+          onDragLeave=handleDragLeave
+          onDragOver=handleDragOver
+          onDrop=handleDrop
           htmlFor="file">
-          {"Tap, click, or drop a file here." |> ReasonReact.string}
+          {label |> ReasonReact.string}
         </label>
         <p> {"Or paste an image!" |> ReasonReact.string} </p>
       </form>;
