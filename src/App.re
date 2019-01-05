@@ -14,7 +14,12 @@ module Styles = {
     ]);
 };
 
+type route =
+  | Home
+  | ViewUpload;
+
 type state = {
+  route,
   uploadProgress: float,
   dragging: bool,
   uploadFailed: bool,
@@ -26,7 +31,13 @@ type action =
   | StartUploading
   | CompleteUploading
   | UploadFailed
-  | UploadProgress(float);
+  | UploadProgress(float)
+  | ChangeRoute(route);
+
+let mapUrlToRoute = (url: ReasonReact.Router.url) =>
+  switch (url.path) {
+  | _ => Home
+  };
 
 let component = ReasonReact.reducerComponent("App");
 
@@ -111,6 +122,7 @@ let make = _ => {
   {
     ...component,
     initialState: () => {
+      route: Home,
       uploadFailed: false,
       uploadProgress: 0.0,
       dragging: false,
@@ -130,6 +142,7 @@ let make = _ => {
           uploadFailed: true,
           uploadProgress: 0.0,
         })
+      | ChangeRoute(route) => ReasonReact.Update({...state, route})
       };
     },
     render: self =>
