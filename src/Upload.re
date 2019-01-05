@@ -7,7 +7,6 @@ module Styles = {
   let form =
     style([
       fontSize(20 |> px),
-      height(100.0 |> pct),
       display(flexBox),
       flexDirection(column),
       padding2(~v=zero, ~h=2.0 |> rem),

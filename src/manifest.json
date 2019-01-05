@@ -1,0 +1,9 @@
+{
+  "name": "Fotup",
+  "short_name": "Fotup",
+  "theme_color": "#333333",
+  "background_color": "#333333",
+  "display": "minimal-ui",
+  "scope": "/",
+  "start_url": "/"
+}
