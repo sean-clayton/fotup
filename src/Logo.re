@@ -23,7 +23,7 @@ let make = _children => {
   ...component,
   render: _self =>
     <h1 className=Styles.logo>
-      <img className=Styles.image src=logo />
+      <img alt="Fotup Logo" className=Styles.image src=logo />
       <span className=Styles.text> {"Fotup" |> ReasonReact.string} </span>
     </h1>,
 };
