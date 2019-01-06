@@ -3,7 +3,6 @@ module Styles = {
 
   let form =
     style([
-      flex(3),
       fontSize(20 |> px),
       display(flexBox),
       flexDirection(column),
@@ -13,9 +12,14 @@ module Styles = {
       textShadow(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.666)),
     ]);
 
-  let _active = [borderStyle(dashed), backgroundColor(transparent)];
+  let active = [borderStyle(dashed), backgroundColor(transparent)];
 
-  let activeStyle = style([selector("+ label", _active)]);
+  let disabled = [
+    pointerEvents(none),
+    backgroundColor(rgba(0, 0, 0, 0.25)),
+  ];
+
+  let activeStyle = style([selector("+ label", active)]);
 
   let fileInput =
     style([
@@ -25,7 +29,7 @@ module Styles = {
       overflow(hidden),
       position(absolute),
       zIndex(-1),
-      selector(":focus + label, + label:hover", _active),
+      selector(":focus + label, + label:hover", active),
       selector(
         "+ label",
         [
@@ -41,7 +45,10 @@ module Styles = {
           marginBottom(1.0 |> rem),
         ],
       ),
+      selector(":disabled + label", disabled),
     ]);
+
+  let label = style([zIndex(1)]);
 
   let progress =
     style([
@@ -64,11 +71,18 @@ module Styles = {
 let component = ReasonReact.statelessComponent("Upload");
 
 let make =
-    (~handleInputChange, ~uploadProgress, ~dragging, ~uploadFailed, _children) => {
+    (
+      ~handleInputChange,
+      ~uploading,
+      ~uploadProgress,
+      ~dragging,
+      ~uploadFailed,
+      _children,
+    ) => {
   {
     ...component,
     render: _self => {
-      let disabled = uploadProgress !== 0.0;
+      let disabled = uploading == true;
       let progress = (uploadProgress *. 100.0)->int_of_float->string_of_int;
       let progressStyle =
         ReactDOMRe.Style.make(
@@ -98,12 +112,11 @@ let make =
           accept="image/*,video/*"
         />
         <label htmlFor="file">
-          {switch (uploadProgress) {
-           | x when x > 0.0 =>
-             <span style=progressStyle className=Styles.progress />
+          {switch (uploading) {
+           | true => <span style=progressStyle className=Styles.progress />
            | _ => ReasonReact.null
            }}
-          <span> {label |> ReasonReact.string} </span>
+          <span className=Styles.label> {label |> ReasonReact.string} </span>
         </label>
         <p> {"Or paste an image!" |> ReasonReact.string} </p>
       </form>;

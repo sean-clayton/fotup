@@ -3,13 +3,21 @@
 module Styles = {
   open Css;
 
+  let header =
+    style([
+      flex(1),
+      display(flexBox),
+      justifyContent(center),
+      alignItems(flexStart),
+      marginBottom(2.0->rem),
+    ]);
+
   let logo =
     style([
       display(flexBox),
       justifyContent(center),
       alignItems(center),
       fontSize(3.0 |> em),
-      margin3(~top=2.0 |> rem, ~bottom=2.0 |> rem, ~h=zero),
     ]);
 
   let image = style([maxHeight(3.0 |> rem), marginRight(1.0 |> rem)]);
@@ -22,8 +30,10 @@ let component = ReasonReact.statelessComponent("Logo");
 let make = _children => {
   ...component,
   render: _self =>
-    <h1 className=Styles.logo>
-      <img alt="Fotup Logo" className=Styles.image src=logo />
-      <span className=Styles.text> {"Fotup" |> ReasonReact.string} </span>
-    </h1>,
+    <header className=Styles.header>
+      <h1 className=Styles.logo>
+        <img alt="Fotup Logo" className=Styles.image src=logo />
+        <span className=Styles.text> {"Fotup" |> ReasonReact.string} </span>
+      </h1>
+    </header>,
 };

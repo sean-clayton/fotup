@@ -1,11 +1,24 @@
 module Styles = {
   open Css;
 
-  let footer = style([flex(1)]);
+  let footer =
+    style([
+      marginTop(2.0->rem),
+      paddingBottom(2.0->rem),
+      flex(1),
+      display(flexBox),
+      flexDirection(column),
+      justifyContent(flexEnd),
+    ]);
 
-  let copyright = style([color(rgba(255, 255, 255, 0.5))]);
+  let copyright =
+    style([
+      margin2(~v=0.5->rem, ~h=zero),
+      color(rgba(255, 255, 255, 0.5)),
+    ]);
 
-  let loveCopy = style([color(rgb(160, 160, 160))]);
+  let loveCopy =
+    style([margin2(~v=0.5->rem, ~h=zero), color(rgb(160, 160, 160))]);
 };
 
 let component = ReasonReact.statelessComponent("Footer");

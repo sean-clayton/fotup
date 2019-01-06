@@ -20,6 +20,8 @@ type route =
 
 type state = {
   route,
+  uploading: bool,
+  uploads: list(Api.upload),
   uploadProgress: float,
   dragging: bool,
   uploadFailed: bool,
@@ -29,7 +31,8 @@ type action =
   | StartDragging
   | StopDragging
   | StartUploading
-  | CompleteUploading
+  | FinishedUploading
+  | AddFile(Api.upload)
   | UploadFailed
   | UploadProgress(float)
   | ChangeRoute(route);
@@ -42,9 +45,8 @@ let mapUrlToRoute = (url: ReasonReact.Router.url) =>
 let component = ReasonReact.reducerComponent("App");
 
 let make = _ => {
-  let handleFileUploaded = response => {
-    redirect(response##data##link);
-    Js.log(response);
+  let handleFileUploaded = (response, {ReasonReact.send}) => {
+    Api.uploadFromJs(response##data)->AddFile->send;
   };
 
   let handleUploadProgress = (a, {ReasonReact.send}) => {
@@ -53,25 +55,36 @@ let make = _ => {
     send(UploadProgress(percent));
   };
 
-  let uploadFile = (file: File.t, {ReasonReact.handle, ReasonReact.send}) => {
-    send(StartUploading);
-    let _ =
-      Js.Promise.(
-        Api.uploadFile(~onUploadProgress=handle(handleUploadProgress), file)
-        |> then_(response =>
-             switch (response##status) {
-             | status when status < 400 =>
-               send(CompleteUploading);
-               response##data |> handleFileUploaded |> resolve;
-             | _ => resolve()
-             }
-           )
-        |> catch(error => {
-             send(CompleteUploading);
-             resolve(Js.log(error));
-           })
-      );
-    ();
+  let uploadFile =
+      (
+        file: File.t,
+        {ReasonReact.state, ReasonReact.handle, ReasonReact.send},
+      ) => {
+    switch (state.uploading) {
+    | false =>
+      send(StartUploading);
+      let _ =
+        Js.Promise.(
+          Api.uploadFile(
+            ~onUploadProgress=handle(handleUploadProgress),
+            file,
+          )
+          |> then_(response =>
+               switch (response##status) {
+               | status when status < 400 =>
+                 send(FinishedUploading);
+                 response##data |> handle(handleFileUploaded) |> resolve;
+               | _ => resolve()
+               }
+             )
+          |> catch(error => {
+               send(UploadFailed);
+               resolve(Js.log(error));
+             })
+        );
+      ();
+    | _ => ()
+    };
   };
 
   let handlePaste = (e, {ReasonReact.handle}) => {
@@ -123,6 +136,8 @@ let make = _ => {
     ...component,
     initialState: () => {
       route: Home,
+      uploading: false,
+      uploads: [],
       uploadFailed: false,
       uploadProgress: 0.0,
       dragging: false,
@@ -133,16 +148,20 @@ let make = _ => {
       | StopDragging => ReasonReact.Update({...state, dragging: false})
       | UploadProgress(percent) =>
         ReasonReact.Update({...state, uploadProgress: percent})
-      | StartUploading => ReasonReact.Update({...state, uploadFailed: false})
-      | CompleteUploading =>
-        ReasonReact.Update({...state, uploadProgress: 0.0})
+      | StartUploading =>
+        ReasonReact.Update({...state, uploading: true, uploadFailed: false})
+      | FinishedUploading =>
+        ReasonReact.Update({...state, uploading: false, uploadProgress: 0.0})
       | UploadFailed =>
         ReasonReact.Update({
           ...state,
+          uploading: false,
           uploadFailed: true,
           uploadProgress: 0.0,
         })
       | ChangeRoute(route) => ReasonReact.Update({...state, route})
+      | AddFile(upload) =>
+        ReasonReact.Update({...state, uploads: [upload, ...state.uploads]})
       };
     },
     render: self =>
@@ -154,12 +173,14 @@ let make = _ => {
         onPaste={self.handle(handlePaste)}
         className=Styles.main>
         <Logo />
-        <Upload
+        <UploadForm
+          uploading={self.state.uploading}
           uploadFailed={self.state.uploadFailed}
           uploadProgress={self.state.uploadProgress}
           dragging={self.state.dragging}
           handleInputChange={self.handle(handleInputChange)}
         />
+        <Uploads uploads={self.state.uploads} />
         <Footer />
       </main>,
   };
