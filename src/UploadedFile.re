@@ -8,7 +8,6 @@ module Styles = {
       alignSelf(flexStart),
       display(block),
       boxSizing(contentBox),
-      height(100.0->pct),
       width(8.0->rem),
       margin(zero),
       backgroundColor(rgba(0, 0, 0, 0.333)),
