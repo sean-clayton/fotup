@@ -68,3 +68,8 @@ module ProgressEvent = {
     total,
   };
 };
+
+module Environment = {
+  [@bs.val]
+  external commitRef: Js.Undefined.t(string) = "process.env.COMMIT_REF";
+};
