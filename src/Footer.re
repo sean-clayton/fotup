@@ -53,7 +53,9 @@ let make = _children => {
                href={
                  "https://github.com/sean-clayton/fotup/commit/" ++ buildId
                }>
-               {buildId |> ReasonReact.string}
+               {buildId
+                |> Js.String.substring(~from=0, ~to_=7)
+                |> ReasonReact.string}
              </a>
            }}
         </p>
