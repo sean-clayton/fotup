@@ -32,7 +32,7 @@ module DataTransfer = {
 
 module FormData = {
   [@bs.new] external create: unit => Js.t('a) = "FormData";
-  [@bs.send] external set: (Js.t('a), string, 'a) => Js.t('a) = "set";
+  [@bs.send] external append: (Js.t('a), string, 'a) => Js.t('a) = "append";
 };
 
 module Location = {
