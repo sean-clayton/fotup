@@ -137,7 +137,18 @@ let make = _ => {
     initialState: () => {
       route: Home,
       uploading: false,
-      uploads: [],
+      uploads: [
+        {
+          originalName: "oaaea.mp4",
+          name: "Q1New5gH.mp4",
+          extension: ".mp4",
+          deleteToken: "FFCegFE5",
+          size: 6244472,
+          thumbnailLink: None,
+          link: "https://s.put.re/Q1New5gH.mp4",
+          deleteLink: "https://s.put.re/delete/Q1New5gH.mp4/FFCegFE5",
+        },
+      ],
       uploadFailed: false,
       uploadProgress: 0.0,
       dragging: false,

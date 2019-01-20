@@ -1,14 +1,49 @@
 module Styles = {
   open Css;
+  open Utils.Styling;
 
-  let uploadWrapper = style([display(flexBox), flex(1)]);
+  let uploadWrapper =
+    style([
+      display(grid),
+      property(
+        "grid-template-areas",
+        {|"upload url"
+          "upload delete-link"|},
+      ),
+      gridGap(1.0->rem),
+      property("grid-template-rows", "min-content 1fr"),
+      gridTemplateColumns([1.0->fr, 1.0->fr]),
+      minHeight(16.->rem),
+      height(33.33->vh),
+      maxHeight(32.->rem),
+      property("align-items", "start"),
+      property("justify-content", "start"),
+      textAlign(initial),
+      flex(1),
+      media(
+        "(max-width: 480px)",
+        [
+          property(
+            "grid-template-areas",
+            {|"upload"
+              "url"
+              "delete-link"|},
+          ),
+          property("grid-template-columns", "1fr"),
+          property("grid-template-rows", "1fr min-content min-content"),
+        ],
+      ),
+    ]);
 
   let uploadFile =
     style([
-      alignSelf(flexStart),
+      alignSelf(stretch),
+      property("object-fit", "contain"),
+      property("grid-area", "upload"),
       display(block),
-      boxSizing(contentBox),
-      width(8.0->rem),
+      boxSizing(borderBox),
+      height(100.0->pct),
+      width(100.0->pct),
       margin(zero),
       backgroundColor(rgba(0, 0, 0, 0.333)),
       padding(0.25->rem),
@@ -19,10 +54,22 @@ module Styles = {
     style([
       display(flexBox),
       flex(1),
-      selector(":last-of-type", [marginBottom(zero)]),
-      padding(zero),
-      margin3(~top=zero, ~h=zero, ~bottom=2.0->rem),
+      padding2(~v=1.0->rem, ~h=zero),
+      marginBottom(1.0->rem),
       listStyleType(none),
+      borderBottom(1->px, solid, rgba(0, 0, 0, 0.5)),
+      selector(
+        ":last-of-type",
+        [
+          marginBottom(zero),
+          padding3(~top=0.0->rem, ~h=zero, ~bottom=0.0->rem),
+          borderBottom(0->px, none, transparent),
+        ],
+      ),
+      media(
+        "(min-width: 480px)",
+        [marginBottom(zero), borderBottom(0->px, none, transparent)],
+      ),
     ]);
 
   let infoContainer =
@@ -34,17 +81,18 @@ module Styles = {
       textAlign(`left),
     ]);
 
-  let infoLink = style([color("63e2ff"->hex), alignSelf(flexStart)]);
+  let infoLink =
+    style([property("grid-area", "delete-link"), color("63e2ff"->hex)]);
 
   let input =
     style([
+      property("grid-area", "url"),
       fontSize(1.0->rem),
       padding(0.5->rem),
       border(zero, none, transparent),
       display(block),
       color(white),
       background(rgba(0, 0, 0, 0.333)),
-      marginBottom(1.0->rem),
     ]);
 };
 
@@ -53,18 +101,6 @@ let videoExtensions = [".mp4", ".webm"];
 
 let isImageFile = x => List.exists(y => y == x, imageExtensions);
 let isVideoFile = x => List.exists(y => y == x, videoExtensions);
-
-let extensionToMimetype = x =>
-  switch (x) {
-  | ".jpg" => "image/jpg"
-  | ".jpeg" => "image/jpeg"
-  | ".gif" => "image/gif"
-  | ".png" => "image/png"
-  | ".webp" => "image/webp"
-  | ".mp4" => "video/mp4"
-  | ".webm" => "video/webm"
-  | _ => "application/octet-stream"
-  };
 
 let component = ReasonReact.statelessComponent("UploadedFile");
 
@@ -93,17 +129,15 @@ let make = (~upload: Api.upload, _children) => {
            </video>
          | _ => ReasonReact.null
          }}
-        <section className=Styles.infoContainer>
-          <input
-            className=Styles.input
-            readOnly=true
-            value={upload.link}
-            onClick={self.handle(handleCopy)}
-          />
-          <a className=Styles.infoLink href={upload.deleteLink}>
-            {"Delete" |> ReasonReact.string}
-          </a>
-        </section>
+        <input
+          className=Styles.input
+          readOnly=true
+          value={upload.link}
+          onClick={self.handle(handleCopy)}
+        />
+        <a className=Styles.infoLink href={upload.deleteLink}>
+          {"Delete" |> ReasonReact.string}
+        </a>
       </div>
     </li>,
 };

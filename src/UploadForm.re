@@ -83,7 +83,8 @@ let make =
     ...component,
     render: _self => {
       let disabled = uploading == true;
-      let progress = (uploadProgress *. 100.0)->int_of_float->string_of_int;
+      let progress =
+        (uploadProgress *. 100.0)->Js.Float.toFixedWithPrecision(~digits=2);
       let progressStyle =
         ReactDOMRe.Style.make(
           ~transform="scaleX(" ++ uploadProgress->Js.Float.toString ++ ")",
