@@ -58,14 +58,11 @@ module Styles = {
       marginBottom(1.0->rem),
       listStyleType(none),
       borderBottom(1->px, solid, rgba(0, 0, 0, 0.5)),
-      selector(
-        ":last-of-type",
-        [
-          marginBottom(zero),
-          padding3(~top=0.0->rem, ~h=zero, ~bottom=0.0->rem),
-          borderBottom(0->px, none, transparent),
-        ],
-      ),
+      lastOfType([
+        marginBottom(zero),
+        padding3(~top=0.0->rem, ~h=zero, ~bottom=0.0->rem),
+        borderBottom(0->px, none, transparent),
+      ]),
       media(
         "(min-width: 480px)",
         [marginBottom(zero), borderBottom(0->px, none, transparent)],
