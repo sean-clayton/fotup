@@ -1,36 +1,35 @@
 module Styles = {
   open Css;
-  open Utils.Styling;
 
   let uploadWrapper =
     style([
       display(grid),
-      property(
+      unsafe(
         "grid-template-areas",
         {|"upload url"
           "upload delete-link"|},
       ),
       gridGap(1.0->rem),
-      property("grid-template-rows", "min-content 1fr"),
+      unsafe("grid-template-rows", "min-content 1fr"),
       gridTemplateColumns([1.0->fr, 1.0->fr]),
       minHeight(16.->rem),
       height(33.33->vh),
       maxHeight(32.->rem),
-      property("align-items", "start"),
-      property("justify-content", "start"),
+      unsafe("align-items", "start"),
+      unsafe("justify-content", "start"),
       textAlign(initial),
       flex(1),
       media(
         "(max-width: 480px)",
         [
-          property(
+          unsafe(
             "grid-template-areas",
             {|"upload"
               "url"
               "delete-link"|},
           ),
-          property("grid-template-columns", "1fr"),
-          property("grid-template-rows", "1fr min-content min-content"),
+          unsafe("grid-template-columns", "1fr"),
+          unsafe("grid-template-rows", "1fr min-content min-content"),
         ],
       ),
     ]);
@@ -38,8 +37,8 @@ module Styles = {
   let uploadFile =
     style([
       alignSelf(stretch),
-      property("object-fit", "contain"),
-      property("grid-area", "upload"),
+      unsafe("object-fit", "contain"),
+      unsafe("grid-area", "upload"),
       display(block),
       boxSizing(borderBox),
       height(100.0->pct),
@@ -79,11 +78,11 @@ module Styles = {
     ]);
 
   let infoLink =
-    style([property("grid-area", "delete-link"), color("63e2ff"->hex)]);
+    style([unsafe("grid-area", "delete-link"), color("63e2ff"->hex)]);
 
   let input =
     style([
-      property("grid-area", "url"),
+      unsafe("grid-area", "url"),
       fontSize(1.0->rem),
       padding(0.5->rem),
       border(zero, none, transparent),

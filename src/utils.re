@@ -73,8 +73,3 @@ module Environment = {
   [@bs.val]
   external commitRef: Js.Undefined.t(string) = "process.env.COMMIT_REF";
 };
-
-module Styling = {
-  let property = (property: string, value: string) =>
-    `declaration((property, value));
-};
