@@ -5,7 +5,7 @@ module Styles = {
 
   let header =
     style([
-      flex(1),
+      flex(`num(1.0)),
       display(flexBox),
       justifyContent(center),
       alignItems(flexStart),

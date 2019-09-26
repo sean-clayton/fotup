@@ -18,7 +18,7 @@ module Styles = {
       unsafe("align-items", "start"),
       unsafe("justify-content", "start"),
       textAlign(initial),
-      flex(1),
+      flex(`num(1.0)),
       media(
         "(max-width: 480px)",
         [
@@ -36,7 +36,7 @@ module Styles = {
 
   let uploadFile =
     style([
-      alignSelf(stretch),
+      alignSelf(`initial),
       unsafe("object-fit", "contain"),
       unsafe("grid-area", "upload"),
       display(block),
@@ -49,10 +49,18 @@ module Styles = {
       borderRadius(3->px),
     ]);
 
+  let uploadFileImage =
+    style([
+      unsafe("object-fit", "contain"),
+      display(block),
+      height(100.0->pct),
+      width(100.0->pct),
+    ]);
+
   let listItem =
     style([
       display(flexBox),
-      flex(1),
+      flex(`num(1.0)),
       padding2(~v=1.0->rem, ~h=zero),
       marginBottom(1.0->rem),
       listStyleType(none),
@@ -70,7 +78,7 @@ module Styles = {
 
   let infoContainer =
     style([
-      flex(1),
+      flex(`num(1.0)),
       display(flexBox),
       flexDirection(column),
       marginLeft(1.0->rem),
@@ -109,13 +117,30 @@ let handleCopy = e => {
   {|document.execCommand("copy")|};
 };
 
+module DeleteButton = {
+  [@react.component]
+  let make = (~deleteUrl) => {
+    <a className=Styles.infoLink href=deleteUrl>
+      {"Delete" |> ReasonReact.string}
+    </a>;
+  };
+};
+
+let stripLink = Js.String.replace("https://s.put.re/", "");
+
 [@react.component]
 let make = (~upload: Api.upload) => {
   <li className=Styles.listItem>
     <div className=Styles.uploadWrapper>
       {switch (upload.extension) {
        | x when x->isImageFile =>
-         <img className=Styles.uploadFile src={upload.link} />
+         <Link
+           className=Styles.uploadFile
+           href={
+             [|"image", upload.link->stripLink|] |> Js.Array.joinWith("/")
+           }>
+           <img className=Styles.uploadFileImage src={upload.link} />
+         </Link>
        | x when x->isVideoFile =>
          <video className=Styles.uploadFile controls=true>
            <source src={upload.link} />
@@ -130,9 +155,7 @@ let make = (~upload: Api.upload) => {
         value={upload.link}
         onClick=handleCopy
       />
-      <a className=Styles.infoLink href={upload.deleteLink}>
-        {"Delete" |> ReasonReact.string}
-      </a>
+      <DeleteButton deleteUrl={upload.deleteLink} />
     </div>
   </li>;
 };

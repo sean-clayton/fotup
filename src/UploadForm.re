@@ -9,7 +9,9 @@ module Styles = {
       padding2(~v=zero, ~h=2.0 |> rem),
       marginBottom(zero),
       justifyContent(center),
-      textShadow(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.666)),
+      textShadow(
+        Shadow.text(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.666)),
+      ),
     ]);
 
   let active = [borderStyle(dashed), backgroundColor(transparent)];

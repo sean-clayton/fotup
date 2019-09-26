@@ -4,7 +4,9 @@ module Styles = {
   let article =
     style([
       color(rgba(255, 255, 255, 0.75)),
-      textShadow(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.333)),
+      textShadow(
+        Shadow.text(~x=zero, ~y=px(1), ~blur=px(1), rgba(0, 0, 0, 0.333)),
+      ),
     ]);
 
   let p = style([display(block)]);
@@ -25,7 +27,7 @@ module Styles = {
         fontSize(px(12)),
         color(rgba(255, 255, 255, 0.2)),
         fontWeight(extraLight),
-        textShadow(~x=zero, ~y=zero, ~blur=zero, transparent),
+        textShadow(Shadow.text(~x=zero, ~y=zero, ~blur=zero, transparent)),
       ]),
     ]);
 };

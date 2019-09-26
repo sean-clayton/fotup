@@ -7,7 +7,7 @@ module Styles = {
     style([
       marginTop(2.0->rem),
       paddingBottom(2.0->rem),
-      flex(1),
+      flex(`num(1.0)),
       display(flexBox),
       flexDirection(column),
       justifyContent(flexEnd),

@@ -1,13 +1,14 @@
-open Webapi;
 open Utils;
 open React;
+
+module File = Webapi.File;
 
 module Styles = {
   open Css;
 
   let main =
     style([
-      flex(1),
+      flex(`num(1.0)),
       display(flexBox),
       flexDirection(column),
       justifyContent(center),
@@ -15,6 +16,7 @@ module Styles = {
     ]);
 };
 
+[@bs.deriving jsConverter]
 type state = {
   uploading: bool,
   uploads: list(Api.upload),
@@ -24,6 +26,7 @@ type state = {
 };
 
 type action =
+  | Initialize
   | StartDragging
   | StopDragging
   | StartUploading
@@ -32,12 +35,24 @@ type action =
   | UploadFailed
   | UploadProgress(float);
 
+let serializeState = () => {
+  let _ = Dom.Storage.getItem;
+  ();
+};
+
+let deserializeState = stateFromJs;
+
 [@react.component]
 let make = () => {
+  let url = ReasonReactRouter.useUrl();
+
   let (state, dispatch) =
     useReducer(
       (state, action) =>
         switch (action) {
+        | Initialize =>
+          Js.log("Initializing app");
+          state;
         | StartDragging => {...state, dragging: true}
         | StopDragging => {...state, dragging: false}
         | UploadProgress(percent) => {...state, uploadProgress: percent}
@@ -63,6 +78,14 @@ let make = () => {
         dragging: false,
       },
     );
+
+  useEffect1(
+    () => {
+      dispatch(Initialize);
+      None;
+    },
+    [||],
+  );
 
   let transformUpload = upload => {
     open Api;
@@ -160,22 +183,27 @@ let make = () => {
     dispatch(StartDragging);
   };
 
-  <main
-    onDragEnter=handleDragEnter
-    onDragLeave=handleDragLeave
-    onDragOver=handleDragOver
-    onDrop=handleDrop
-    onPaste=handlePaste
-    className=Styles.main>
-    <Logo />
-    <UploadForm
-      uploading={state.uploading}
-      uploadFailed={state.uploadFailed}
-      uploadProgress={state.uploadProgress}
-      dragging={state.dragging}
-      handleInputChange
-    />
-    <Uploads uploads={state.uploads} />
-    <Footer />
-  </main>;
+  switch (url.path) {
+  | ["image", imageFilename, ..._] =>
+    <main className=Styles.main> <ImageView imageFilename /> </main>
+  | _ =>
+    <main
+      onDragEnter=handleDragEnter
+      onDragLeave=handleDragLeave
+      onDragOver=handleDragOver
+      onDrop=handleDrop
+      onPaste=handlePaste
+      className=Styles.main>
+      <Logo />
+      <UploadForm
+        uploading={state.uploading}
+        uploadFailed={state.uploadFailed}
+        uploadProgress={state.uploadProgress}
+        dragging={state.dragging}
+        handleInputChange
+      />
+      <Uploads uploads={state.uploads} />
+      <Footer />
+    </main>
+  };
 };

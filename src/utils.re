@@ -1,10 +1,3 @@
-module Option = {
-  let unwrapUnsafely =
-    fun
-    | Some(v) => v
-    | None => raise(Invalid_argument("unwrapUnsafely called on None"));
-};
-
 module DataTransfer = {
   type dropEffect = string;
 
@@ -33,15 +26,6 @@ module DataTransfer = {
 module FormData = {
   [@bs.new] external create: unit => Js.t('a) = "FormData";
   [@bs.send] external append: (Js.t('a), string, 'a) => Js.t('a) = "append";
-};
-
-module Location = {
-  [@bs.val] [@bs.scope ("window", "location")]
-  external assign: string => unit = "assign";
-};
-
-let redirect = newPath => {
-  Location.assign(newPath);
 };
 
 module MouseEvent = {
