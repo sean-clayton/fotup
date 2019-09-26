@@ -87,7 +87,7 @@ let make = () => {
   };
 
   let handleUploadProgress = a => {
-    let e = a |> ProgressEvent.progressEventFromJs;
+    let e = a->ProgressEvent.progressEventFromJs;
     let percent = e.loaded->float_of_int /. e.total->float_of_int;
     dispatch(UploadProgress(percent));
   };
@@ -103,7 +103,7 @@ let make = () => {
                switch (response##status) {
                | status when status < 400 =>
                  dispatch(FinishedUploading);
-                 response##data |> handleFileUploaded |> resolve;
+                 response##data->handleFileUploaded->resolve;
                | _ => resolve()
                }
              )
@@ -118,47 +118,45 @@ let make = () => {
   };
 
   let handlePaste = e => {
-    e |> ReactEvent.Clipboard.preventDefault;
+    e->ReactEvent.Clipboard.preventDefault;
     let data =
-      e
-      |> ReactEvent.Clipboard.clipboardData
-      |> DataTransfer.dataTransferFromJs;
+      e->ReactEvent.Clipboard.clipboardData->DataTransfer.dataTransferFromJs;
     switch (data.files) {
-    | [|file|] => file |> uploadFile
+    | [|file|] => file->uploadFile
     | _ => ()
     };
   };
 
   let handleInputChange = e => {
-    e |> ReactEvent.Form.preventDefault;
-    switch (e |> ReactEvent.Form.target |> Target.files) {
-    | [|file|] => file |> uploadFile
+    e->ReactEvent.Form.preventDefault;
+    switch (e->ReactEvent.Form.target->Target.files) {
+    | [|file|] => file->uploadFile
     | _ => ()
     };
   };
 
   let handleDrop = e => {
-    e |> ReactEvent.Mouse.preventDefault;
+    e->ReactEvent.Mouse.preventDefault;
     dispatch(StopDragging);
-    let data = e |> MouseEvent.dataTransfer |> DataTransfer.dataTransferFromJs;
+    let data = e->MouseEvent.dataTransfer->DataTransfer.dataTransferFromJs;
     switch (data.files) {
-    | [|file|] => file |> uploadFile
+    | [|file|] => file->uploadFile
     | _ => ()
     };
   };
 
   let handleDragEnter = e => {
-    e |> ReactEvent.Mouse.preventDefault;
+    e->ReactEvent.Mouse.preventDefault;
     dispatch(StartDragging);
   };
 
   let handleDragLeave = e => {
-    e |> ReactEvent.Mouse.preventDefault;
+    e->ReactEvent.Mouse.preventDefault;
     dispatch(StopDragging);
   };
 
   let handleDragOver = e => {
-    e |> ReactEvent.Mouse.preventDefault;
+    e->ReactEvent.Mouse.preventDefault;
     dispatch(StartDragging);
   };
 
