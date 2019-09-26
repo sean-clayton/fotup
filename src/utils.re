@@ -72,4 +72,8 @@ module ProgressEvent = {
 module Environment = {
   [@bs.val]
   external commitRef: Js.Undefined.t(string) = "process.env.COMMIT_REF";
+
+  [@bs.val]
+  external imageHostPath: Js.Undefined.t(string) =
+    "process.env.IMAGE_HOST_PATH";
 };

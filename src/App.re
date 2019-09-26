@@ -15,12 +15,7 @@ module Styles = {
     ]);
 };
 
-type route =
-  | Home
-  | ViewUpload;
-
 type state = {
-  route,
   uploading: bool,
   uploads: list(Api.upload),
   uploadProgress: float,
@@ -35,8 +30,7 @@ type action =
   | FinishedUploading
   | AddFile(Api.upload)
   | UploadFailed
-  | UploadProgress(float)
-  | ChangeRoute(route);
+  | UploadProgress(float);
 
 [@react.component]
 let make = () => {
@@ -59,11 +53,9 @@ let make = () => {
             uploadFailed: true,
             uploadProgress: 0.0,
           }
-        | ChangeRoute(route) => {...state, route}
         | AddFile(upload) => {...state, uploads: [upload, ...state.uploads]}
         },
       {
-        route: Home,
         uploading: false,
         uploads: [],
         uploadFailed: false,
@@ -72,8 +64,26 @@ let make = () => {
       },
     );
 
+  let transformUpload = upload => {
+    open Api;
+    open Js;
+    let uploadLink = String.make(upload.link);
+    {
+      ...upload,
+      link:
+        uploadLink
+        |> String.replace(
+             "https://s.put.re/",
+             Environment.imageHostPath
+             ->Js.Undefined.toOption
+             ->Belt.Option.getExn
+             ->String.make,
+           ),
+    };
+  };
+
   let handleFileUploaded = response => {
-    Api.uploadFromJs(response##data)->AddFile->dispatch;
+    Api.uploadFromJs(response##data)->transformUpload->AddFile->dispatch;
   };
 
   let handleUploadProgress = a => {
