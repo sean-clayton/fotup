@@ -2,11 +2,14 @@
   "name": "fotup",
   "version": "1.0.0",
   "scripts": {
-    "build:fresh": "yarn clean && yarn build",
-    "build": "yarn parcel build src/index.html --public-url / --detailed-report",
-    "start": "yarn parcel src/index.html --public-url / --open",
+    "build:fresh": "npm-run-all bsb:clean clean build",
+    "build": "npm-run-all bsb:make build:parcel",
+    "bsb:make": "bsb -make-world",
+    "build:parcel": "parcel build src/index.html --public-url / --detailed-report --experimental-scope-hoisting",
+    "bsb:clean": "bsb -clean-world",
+    "start": "yarn parcel src/index.html --public-url / --open --port 3000",
     "test": "echo \"lol\" && exit 1",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist lib/* .cache .merlin src/**/*.bs.js"
   },
   "author": "Sean-Patrick Ortencio Clayton",
   "license": "ISC",
@@ -17,8 +20,7 @@
     "swDest": "service-worker.js"
   },
   "devDependencies": {
-    "bs-platform": "^4.0.15",
-    "bsb-js": "^1.1.7",
+    "bs-platform": "5.0.6",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.11.0",
     "parcel-plugin-static-files-copy": "^1.2.4",
@@ -29,8 +31,8 @@
     "bs-axios": "^0.0.39",
     "bs-css": "^8.0.0",
     "bs-webapi": "^0.13.1",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "reason-react": "^0.5.3"
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
+    "reason-react": "0.7.0"
   }
 }
