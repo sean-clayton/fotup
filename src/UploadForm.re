@@ -68,8 +68,7 @@ module Styles = {
   let fileDragging = merge([fileInput, activeStyle]);
 };
 
-let component = ReasonReact.statelessComponent("Upload");
-
+[@react.component]
 let make =
     (
       ~handleInputChange,
@@ -77,50 +76,44 @@ let make =
       ~uploadProgress,
       ~dragging,
       ~uploadFailed,
-      _children,
     ) => {
-  {
-    ...component,
-    render: _self => {
-      let disabled = uploading == true;
-      let progress =
-        (uploadProgress *. 100.0)->Js.Float.toFixedWithPrecision(~digits=2);
-      let progressStyle =
-        ReactDOMRe.Style.make(
-          ~transform="scaleX(" ++ uploadProgress->Js.Float.toString ++ ")",
-          ~transformOrigin="left",
-          (),
-        );
-      let label =
-        switch (disabled, uploadFailed) {
-        | (true, false) => "Upload in progress... (" ++ progress ++ "%)"
-        | (true, true) => "Upload failed!"
-        | (false, _) => "Tap, click, or drop a file here."
-        };
-      let inputClassName =
-        switch (dragging) {
-        | true => Styles.fileDragging
-        | _ => Styles.fileInput
-        };
-      <form className=Styles.form onSubmit=ReactEvent.Form.preventDefault>
-        <input
-          disabled
-          onChange=handleInputChange
-          className=inputClassName
-          id="file"
-          name="file"
-          type_="file"
-          accept="image/*,video/*"
-        />
-        <label htmlFor="file">
-          {switch (uploading) {
-           | true => <span style=progressStyle className=Styles.progress />
-           | _ => ReasonReact.null
-           }}
-          <span className=Styles.label> {label |> ReasonReact.string} </span>
-        </label>
-        <p> {"Or paste an image!" |> ReasonReact.string} </p>
-      </form>;
-    },
-  };
+  let disabled = uploading == true;
+  let progress =
+    (uploadProgress *. 100.0)->Js.Float.toFixedWithPrecision(~digits=2);
+  let progressStyle =
+    ReactDOMRe.Style.make(
+      ~transform="scaleX(" ++ uploadProgress->Js.Float.toString ++ ")",
+      ~transformOrigin="left",
+      (),
+    );
+  let label =
+    switch (disabled, uploadFailed) {
+    | (true, false) => "Upload in progress... (" ++ progress ++ "%)"
+    | (true, true) => "Upload failed!"
+    | (false, _) => "Tap, click, or drop a file here."
+    };
+  let inputClassName =
+    switch (dragging) {
+    | true => Styles.fileDragging
+    | _ => Styles.fileInput
+    };
+  <form className=Styles.form onSubmit=ReactEvent.Form.preventDefault>
+    <input
+      disabled
+      onChange=handleInputChange
+      className=inputClassName
+      id="file"
+      name="file"
+      type_="file"
+      accept="image/*,video/*"
+    />
+    <label htmlFor="file">
+      {switch (uploading) {
+       | true => <span style=progressStyle className=Styles.progress />
+       | _ => ReasonReact.null
+       }}
+      <span className=Styles.label> {label |> ReasonReact.string} </span>
+    </label>
+    <p> {"Or paste an image!" |> ReasonReact.string} </p>
+  </form>;
 };

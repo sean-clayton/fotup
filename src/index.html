@@ -1,66 +1,73 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
+  <head>
+    <meta name="Description" content="Upload your images and videos!" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/site.webmanifest" />
+    <link
+      rel="mask-icon"
+      href="/assets/safari-pinned-tab.svg"
+      color="#b066fe"
+    />
+    <link rel="shortcut icon" href="/assets/favicon.ico" />
+    <meta name="msapplication-TileColor" content="#333333" />
+    <meta name="msapplication-config" content="/assets/browserconfig.xml" />
+    <meta name="theme-color" content="#333333" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="author" href="humans.txt" />
+    <title>Fotup</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-<head>
-  <meta name="Description" content="Upload your images and videos!">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
-  <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#b066fe">
-  <link rel="shortcut icon" href="/assets/favicon.ico">
-  <meta name="msapplication-TileColor" content="#333333">
-  <meta name="msapplication-config" content="/assets/browserconfig.xml">
-  <meta name="theme-color" content="#333333">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="author" href="humans.txt" />
-  <title>Fotup</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+      }
 
-    html,
-    body {
-      padding: 0;
-      margin: 0;
-    }
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+          "Helvetica Neue", sans-serif;
+        color: white;
+        background-color: #5a5454;
+        background-image: linear-gradient(135deg, #5a5454, #333333);
+        background-attachment: fixed;
+      }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-      color: white;
-      background-color: #5A5454;
-      background-image: linear-gradient(135deg, #5A5454, #333333);
-      background-attachment: fixed;
-    }
+      body,
+      #root {
+        min-height: 100vh;
+      }
 
-    body,
-    #root {
-      min-height: 100vh;
-    }
+      #root {
+        display: flex;
+      }
+    </style>
+  </head>
 
-    #root {
-      display: flex;
-    }
-  </style>
-</head>
-
-<body>
-  <noscript>JavaScript is required to use this app.</noscript>
-  <div id="root"></div>
-  <script src="./index.re"></script>
-  <script>
-    if (process.env.NODE_ENV === "production" && 'serviceWorker' in navigator) {
-      const x = 'service-worker.js';
-      navigator.serviceWorker.register(x)
-        .then(function (registration) {
-          console.log('Registration successful, scope is:', registration.scope);
-        })
-        .catch(function (error) {
-          console.log('Service worker registration failed, error:', error);
-        });
-    }
-  </script>
-</body>
-
+  <body>
+    <noscript>JavaScript is required to use this app.</noscript>
+    <div id="root"></div>
+    <script src="./index.re"></script>
+    <script src="./serviceWorker.js"></script>
+  </body>
 </html>

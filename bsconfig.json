@@ -6,7 +6,7 @@
   },
   "bs-dependencies": ["reason-react", "bs-css", "bs-axios", "bs-webapi"],
   "reason": {
-    "react-jsx": 2
+    "react-jsx": 3
   },
   "package-specs": {
     "module": "commonjs",

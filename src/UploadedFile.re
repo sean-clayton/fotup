@@ -100,7 +100,7 @@ let isVideoFile = x => List.exists(y => y == x, videoExtensions);
 
 let component = ReasonReact.statelessComponent("UploadedFile");
 
-let handleCopy = (e, _self) => {
+let handleCopy = e => {
   e->ReactEvent.Mouse.preventDefault;
   e->ReactEvent.Mouse.persist;
   let target = e->ReactEvent.Mouse.target;
@@ -109,31 +109,30 @@ let handleCopy = (e, _self) => {
   {|document.execCommand("copy")|};
 };
 
-let make = (~upload: Api.upload, _children) => {
-  ...component,
-  render: self =>
-    <li className=Styles.listItem>
-      <div className=Styles.uploadWrapper>
-        {switch (upload.extension) {
-         | x when x->isImageFile =>
-           <img className=Styles.uploadFile src={upload.link} />
-         | x when x->isVideoFile =>
-           <video className=Styles.uploadFile controls=true>
-             <source src={upload.link} />
-             {"I'm sorry; your browser doesn't support HTML5 video in WebM with VP8/VP9 or MP4 with H.264."
-              |> ReasonReact.string}
-           </video>
-         | _ => ReasonReact.null
-         }}
-        <input
-          className=Styles.input
-          readOnly=true
-          value={upload.link}
-          onClick={self.handle(handleCopy)}
-        />
-        <a className=Styles.infoLink href={upload.deleteLink}>
-          {"Delete" |> ReasonReact.string}
-        </a>
-      </div>
-    </li>,
+[@react.component]
+let make = (~upload: Api.upload) => {
+  <li className=Styles.listItem>
+    <div className=Styles.uploadWrapper>
+      {switch (upload.extension) {
+       | x when x->isImageFile =>
+         <img className=Styles.uploadFile src={upload.link} />
+       | x when x->isVideoFile =>
+         <video className=Styles.uploadFile controls=true>
+           <source src={upload.link} />
+           {"I'm sorry; your browser doesn't support HTML5 video in WebM with VP8/VP9 or MP4 with H.264."
+            |> ReasonReact.string}
+         </video>
+       | _ => ReasonReact.null
+       }}
+      <input
+        className=Styles.input
+        readOnly=true
+        value={upload.link}
+        onClick=handleCopy
+      />
+      <a className=Styles.infoLink href={upload.deleteLink}>
+        {"Delete" |> ReasonReact.string}
+      </a>
+    </div>
+  </li>;
 };

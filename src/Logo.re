@@ -27,13 +27,11 @@ module Styles = {
 
 let component = ReasonReact.statelessComponent("Logo");
 
-let make = _children => {
-  ...component,
-  render: _self =>
-    <header className=Styles.header>
-      <h1 className=Styles.logo>
-        <img alt="Fotup Logo" className=Styles.image src=logo />
-        <span className=Styles.text> {"Fotup" |> ReasonReact.string} </span>
-      </h1>
-    </header>,
-};
+[@react.component]
+let make = () =>
+  <header className=Styles.header>
+    <h1 className=Styles.logo>
+      <img alt="Fotup Logo" className=Styles.image src=logo />
+      <span className=Styles.text> {"Fotup" |> ReasonReact.string} </span>
+    </h1>
+  </header>;

@@ -1,5 +1,6 @@
 open Webapi;
 open Utils;
+open React;
 
 module Styles = {
   open Css;
@@ -37,48 +38,67 @@ type action =
   | UploadProgress(float)
   | ChangeRoute(route);
 
-let mapUrlToRoute = (url: ReasonReact.Router.url) =>
-  switch (url.path) {
-  | _ => Home
+[@react.component]
+let make = () => {
+  let (state, dispatch) =
+    useReducer(
+      (state, action) =>
+        switch (action) {
+        | StartDragging => {...state, dragging: true}
+        | StopDragging => {...state, dragging: false}
+        | UploadProgress(percent) => {...state, uploadProgress: percent}
+        | StartUploading => {...state, uploading: true, uploadFailed: false}
+        | FinishedUploading => {
+            ...state,
+            uploading: false,
+            uploadProgress: 0.0,
+          }
+        | UploadFailed => {
+            ...state,
+            uploading: false,
+            uploadFailed: true,
+            uploadProgress: 0.0,
+          }
+        | ChangeRoute(route) => {...state, route}
+        | AddFile(upload) => {...state, uploads: [upload, ...state.uploads]}
+        },
+      {
+        route: Home,
+        uploading: false,
+        uploads: [],
+        uploadFailed: false,
+        uploadProgress: 0.0,
+        dragging: false,
+      },
+    );
+
+  let handleFileUploaded = response => {
+    Api.uploadFromJs(response##data)->AddFile->dispatch;
   };
 
-let component = ReasonReact.reducerComponent("App");
-
-let make = _ => {
-  let handleFileUploaded = (response, {ReasonReact.send}) => {
-    Api.uploadFromJs(response##data)->AddFile->send;
-  };
-
-  let handleUploadProgress = (a, {ReasonReact.send}) => {
+  let handleUploadProgress = a => {
     let e = a |> ProgressEvent.progressEventFromJs;
     let percent = e.loaded->float_of_int /. e.total->float_of_int;
-    send(UploadProgress(percent));
+    dispatch(UploadProgress(percent));
   };
 
-  let uploadFile =
-      (
-        file: File.t,
-        {ReasonReact.state, ReasonReact.handle, ReasonReact.send},
-      ) => {
+  let uploadFile = (file: File.t) => {
     switch (state.uploading) {
     | false =>
-      send(StartUploading);
+      dispatch(StartUploading);
       let _ =
         Js.Promise.(
-          Api.uploadFile(
-            ~onUploadProgress=handle(handleUploadProgress),
-            file,
-          )
+          Api.uploadFile(~onUploadProgress=handleUploadProgress, file)
           |> then_(response =>
                switch (response##status) {
                | status when status < 400 =>
-                 send(FinishedUploading);
-                 response##data |> handle(handleFileUploaded) |> resolve;
+                 dispatch(FinishedUploading);
+                 response##data |> handleFileUploaded |> resolve;
                | _ => resolve()
                }
              )
           |> catch(error => {
-               send(UploadFailed);
+               dispatch(UploadFailed);
                resolve(Js.log(error));
              })
         );
@@ -87,101 +107,67 @@ let make = _ => {
     };
   };
 
-  let handlePaste = (e, {ReasonReact.handle}) => {
+  let handlePaste = e => {
     e |> ReactEvent.Clipboard.preventDefault;
     let data =
       e
       |> ReactEvent.Clipboard.clipboardData
       |> DataTransfer.dataTransferFromJs;
     switch (data.files) {
-    | [|file|] => file |> handle(uploadFile)
+    | [|file|] => file |> uploadFile
     | _ => ()
     };
   };
 
-  let handleInputChange = (e, {ReasonReact.handle}) => {
+  let handleInputChange = e => {
     e |> ReactEvent.Form.preventDefault;
     switch (e |> ReactEvent.Form.target |> Target.files) {
-    | [|file|] => file |> handle(uploadFile)
+    | [|file|] => file |> uploadFile
     | _ => ()
     };
   };
 
-  let handleDrop = (e, {ReasonReact.send, ReasonReact.handle}) => {
+  let handleDrop = e => {
     e |> ReactEvent.Mouse.preventDefault;
-    send(StopDragging);
+    dispatch(StopDragging);
     let data = e |> MouseEvent.dataTransfer |> DataTransfer.dataTransferFromJs;
     switch (data.files) {
-    | [|file|] => file |> handle(uploadFile)
+    | [|file|] => file |> uploadFile
     | _ => ()
     };
   };
 
-  let handleDragEnter = (e, {ReasonReact.send}) => {
+  let handleDragEnter = e => {
     e |> ReactEvent.Mouse.preventDefault;
-    send(StartDragging);
+    dispatch(StartDragging);
   };
 
-  let handleDragLeave = (e, {ReasonReact.send}) => {
+  let handleDragLeave = e => {
     e |> ReactEvent.Mouse.preventDefault;
-    send(StopDragging);
+    dispatch(StopDragging);
   };
 
-  let handleDragOver = (e, {ReasonReact.send}) => {
+  let handleDragOver = e => {
     e |> ReactEvent.Mouse.preventDefault;
-    send(StartDragging);
+    dispatch(StartDragging);
   };
 
-  {
-    ...component,
-    initialState: () => {
-      route: Home,
-      uploading: false,
-      uploads: [],
-      uploadFailed: false,
-      uploadProgress: 0.0,
-      dragging: false,
-    },
-    reducer: (action, state) => {
-      switch (action) {
-      | StartDragging => ReasonReact.Update({...state, dragging: true})
-      | StopDragging => ReasonReact.Update({...state, dragging: false})
-      | UploadProgress(percent) =>
-        ReasonReact.Update({...state, uploadProgress: percent})
-      | StartUploading =>
-        ReasonReact.Update({...state, uploading: true, uploadFailed: false})
-      | FinishedUploading =>
-        ReasonReact.Update({...state, uploading: false, uploadProgress: 0.0})
-      | UploadFailed =>
-        ReasonReact.Update({
-          ...state,
-          uploading: false,
-          uploadFailed: true,
-          uploadProgress: 0.0,
-        })
-      | ChangeRoute(route) => ReasonReact.Update({...state, route})
-      | AddFile(upload) =>
-        ReasonReact.Update({...state, uploads: [upload, ...state.uploads]})
-      };
-    },
-    render: self =>
-      <main
-        onDragEnter={self.handle(handleDragEnter)}
-        onDragLeave={self.handle(handleDragLeave)}
-        onDragOver={self.handle(handleDragOver)}
-        onDrop={self.handle(handleDrop)}
-        onPaste={self.handle(handlePaste)}
-        className=Styles.main>
-        <Logo />
-        <UploadForm
-          uploading={self.state.uploading}
-          uploadFailed={self.state.uploadFailed}
-          uploadProgress={self.state.uploadProgress}
-          dragging={self.state.dragging}
-          handleInputChange={self.handle(handleInputChange)}
-        />
-        <Uploads uploads={self.state.uploads} />
-        <Footer />
-      </main>,
-  };
+  <main
+    onDragEnter=handleDragEnter
+    onDragLeave=handleDragLeave
+    onDragOver=handleDragOver
+    onDrop=handleDrop
+    onPaste=handlePaste
+    className=Styles.main>
+    <Logo />
+    <UploadForm
+      uploading={state.uploading}
+      uploadFailed={state.uploadFailed}
+      uploadProgress={state.uploadProgress}
+      dragging={state.dragging}
+      handleInputChange
+    />
+    <Uploads uploads={state.uploads} />
+    <Footer />
+  </main>;
 };

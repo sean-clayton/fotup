@@ -47,13 +47,13 @@ let redirect = newPath => {
 module MouseEvent = {
   type t = ReactEvent.Mouse.t;
 
-  [@bs.get] external dataTransfer: t => Js.t({..}) = "";
+  [@bs.get] external dataTransfer: t => Js.t({..}) = "dataTransfer";
 };
 
 module Target = {
   type t = Js.t({.});
 
-  [@bs.get] external files: t => array(Webapi.File.t) = "";
+  [@bs.get] external files: t => array(Webapi.File.t) = "files";
 };
 
 module ProgressEvent = {

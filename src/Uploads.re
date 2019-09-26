@@ -13,21 +13,18 @@ module Styles = {
     ]);
 };
 
-let component = ReasonReact.statelessComponent("Uploads");
-
-let make = (~uploads, _children) => {
-  ...component,
-  render: _self =>
-    switch (uploads) {
-    | [] => ReasonReact.null
-    | _ =>
-      <ul className=Styles.listContainer>
-        {uploads
-         |> List.map((upload: Api.upload) =>
-              <UploadedFile upload key={upload.name} />
-            )
-         |> Array.of_list
-         |> ReasonReact.array}
-      </ul>
-    },
+[@react.component]
+let make = (~uploads) => {
+  switch (uploads) {
+  | [] => ReasonReact.null
+  | _ =>
+    <ul className=Styles.listContainer>
+      {uploads
+       |> List.map((upload: Api.upload) =>
+            <UploadedFile upload key={upload.name} />
+          )
+       |> Array.of_list
+       |> ReasonReact.array}
+    </ul>
+  };
 };

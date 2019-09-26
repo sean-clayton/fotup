@@ -28,41 +28,33 @@ let component = ReasonReact.statelessComponent("Footer");
 
 let date = Js.Date.make()->Js.Date.getFullYear->int_of_float->string_of_int;
 
-let make = _children => {
-  {
-    ...component,
-    render: _self => {
-      let buildId =
-        switch (Js.Undefined.toOption(Environment.commitRef)) {
-        | None => "DEV"
-        | Some(buildId) => buildId
-        };
+[@react.component]
+let make = () => {
+  let buildId =
+    switch (Js.Undefined.toOption(Environment.commitRef)) {
+    | None => "DEV"
+    | Some(buildId) => buildId
+    };
 
-      <footer className=Styles.footer>
-        <About />
-        <p className=Styles.p>
-          {{js|Made with 🥃 in Louisville, KY|js} |> ReasonReact.string}
-        </p>
-        <p className=Styles.p>
-          {"Build ID: " |> ReasonReact.string}
-          {switch (buildId) {
-           | "DEV" => "DEV" |> ReasonReact.string
-           | buildId =>
-             <a
-               className=Styles.link
-               href={
-                 "https://github.com/sean-clayton/fotup/commit/" ++ buildId
-               }>
-               {buildId
-                |> Js.String.substring(~from=0, ~to_=7)
-                |> ReasonReact.string}
-             </a>
-           }}
-        </p>
-        <p className=Styles.p>
-          {"Copyright " ++ date |> ReasonReact.string}
-        </p>
-      </footer>;
-    },
-  };
+  <footer className=Styles.footer>
+    <About />
+    <p className=Styles.p>
+      {{js|Made with 🥃 in Louisville, KY|js} |> ReasonReact.string}
+    </p>
+    <p className=Styles.p>
+      {"Build ID: " |> ReasonReact.string}
+      {switch (buildId) {
+       | "DEV" => "DEV" |> ReasonReact.string
+       | buildId =>
+         <a
+           className=Styles.link
+           href={"https://github.com/sean-clayton/fotup/commit/" ++ buildId}>
+           {buildId
+            |> Js.String.substring(~from=0, ~to_=7)
+            |> ReasonReact.string}
+         </a>
+       }}
+    </p>
+    <p className=Styles.p> {"Copyright " ++ date |> ReasonReact.string} </p>
+  </footer>;
 };
