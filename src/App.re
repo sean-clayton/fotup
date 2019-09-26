@@ -35,12 +35,78 @@ type action =
   | UploadFailed
   | UploadProgress(float);
 
-let serializeState = () => {
-  let _ = Dom.Storage.getItem;
-  ();
+let serializeUploads = (uploads: list(Api.upload)) => {
+  let serialized =
+    uploads
+    ->Belt.List.map(upload => Api.uploadToJs(upload))
+    ->Belt.List.toArray
+    ->Js.Json.stringifyAny
+    ->Belt.Option.getWithDefault("");
+  Dom.Storage.localStorage
+  |> Dom.Storage.setItem("__FOTUP__UPLOADS__", serialized);
 };
 
-let deserializeState = stateFromJs;
+let deserializeUploads = {
+  open Belt;
+  open Js.Json;
+
+  let serialized =
+    (Dom.Storage.localStorage |> Dom.Storage.getItem("__FOTUP__UPLOADS__"))
+    ->Option.getWithDefault("[]");
+
+  serialized
+  ->parseExn
+  ->decodeArray
+  ->Option.getWithDefault([||])
+  ->Array.map(decodeObject)
+  ->Array.map(maybeObj =>
+      Option.flatMap(
+        maybeObj,
+        dict => {
+          let keys = (
+            dict->Js.Dict.get("originalName")->Option.flatMap(decodeString),
+            dict->Js.Dict.get("name")->Option.flatMap(decodeString),
+            dict->Js.Dict.get("extension")->Option.flatMap(decodeString),
+            dict->Js.Dict.get("deleteToken")->Option.flatMap(decodeString),
+            dict
+            ->Js.Dict.get("size")
+            ->Option.flatMap(decodeNumber)
+            ->Option.map(int_of_float),
+            dict->Js.Dict.get("thumbnailLink")->Option.flatMap(decodeString),
+            dict->Js.Dict.get("link")->Option.flatMap(decodeString),
+            dict->Js.Dict.get("deleteLink")->Option.flatMap(decodeString),
+          );
+          switch (keys) {
+          | (
+              Some(originalName),
+              Some(name),
+              Some(extension),
+              Some(deleteToken),
+              Some(size),
+              thumbnailLink,
+              Some(link),
+              Some(deleteLink),
+            ) =>
+            Some(
+              Api.uploadFromJs({
+                "originalName": originalName,
+                "name": name,
+                "extension": extension,
+                "deleteToken": deleteToken,
+                "size": size,
+                "thumbnailLink": thumbnailLink,
+                "link": link,
+                "deleteLink": deleteLink,
+              }),
+            )
+          | _ => None
+          };
+        },
+      )
+    )
+  ->Array.keep(Option.isSome)
+  ->Array.map(Option.getExn);
+};
 
 [@react.component]
 let make = () => {
@@ -52,7 +118,9 @@ let make = () => {
         switch (action) {
         | Initialize =>
           Js.log("Initializing app");
-          state;
+          let uploads = deserializeUploads->Belt.List.fromArray;
+          Js.log(uploads);
+          {...state, uploads};
         | StartDragging => {...state, dragging: true}
         | StopDragging => {...state, dragging: false}
         | UploadProgress(percent) => {...state, uploadProgress: percent}
@@ -68,7 +136,10 @@ let make = () => {
             uploadFailed: true,
             uploadProgress: 0.0,
           }
-        | AddFile(upload) => {...state, uploads: [upload, ...state.uploads]}
+        | AddFile(upload) =>
+          let newState = {...state, uploads: [upload, ...state.uploads]};
+          serializeUploads(newState.uploads);
+          newState;
         },
       {
         uploading: false,

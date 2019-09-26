@@ -4,7 +4,7 @@ module Styles = {
   open Css;
   let imageContainer =
     style([
-      unsafe("object-fit", "contain"),
+      unsafe("objectFit", "contain"),
       cursor(`zoomIn),
       display(block),
       top(10.0->pct),

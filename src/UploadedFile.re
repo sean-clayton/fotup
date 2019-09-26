@@ -5,31 +5,31 @@ module Styles = {
     style([
       display(grid),
       unsafe(
-        "grid-template-areas",
+        "gridTemplateAreas",
         {|"upload url"
           "upload delete-link"|},
       ),
       gridGap(1.0->rem),
-      unsafe("grid-template-rows", "min-content 1fr"),
+      unsafe("gridTemplateRows", "min-content 1fr"),
       gridTemplateColumns([1.0->fr, 1.0->fr]),
       minHeight(16.->rem),
       height(33.33->vh),
       maxHeight(32.->rem),
-      unsafe("align-items", "start"),
-      unsafe("justify-content", "start"),
+      unsafe("alignItems", "start"),
+      unsafe("justifyContent", "start"),
       textAlign(initial),
       flex(`num(1.0)),
       media(
         "(max-width: 480px)",
         [
           unsafe(
-            "grid-template-areas",
+            "gridTemplateAreas",
             {|"upload"
               "url"
               "delete-link"|},
           ),
-          unsafe("grid-template-columns", "1fr"),
-          unsafe("grid-template-rows", "1fr min-content min-content"),
+          unsafe("gridTemplateColumns", "1fr"),
+          unsafe("gridTemplateRows", "1fr min-content min-content"),
         ],
       ),
     ]);
@@ -37,8 +37,8 @@ module Styles = {
   let uploadFile =
     style([
       alignSelf(`initial),
-      unsafe("object-fit", "contain"),
-      unsafe("grid-area", "upload"),
+      unsafe("objectFit", "contain"),
+      unsafe("gridArea", "upload"),
       display(block),
       boxSizing(borderBox),
       height(100.0->pct),
@@ -51,7 +51,7 @@ module Styles = {
 
   let uploadFileImage =
     style([
-      unsafe("object-fit", "contain"),
+      unsafe("objectFit", "contain"),
       display(block),
       height(100.0->pct),
       width(100.0->pct),
@@ -86,11 +86,11 @@ module Styles = {
     ]);
 
   let infoLink =
-    style([unsafe("grid-area", "delete-link"), color("63e2ff"->hex)]);
+    style([unsafe("gridArea", "delete-link"), color("63e2ff"->hex)]);
 
   let input =
     style([
-      unsafe("grid-area", "url"),
+      unsafe("gridArea", "url"),
       fontSize(1.0->rem),
       padding(0.5->rem),
       border(zero, none, transparent),

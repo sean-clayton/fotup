@@ -1,3 +1,8 @@
+module JsonUtils = {
+  [@bs.scope "JSON"] [@bs.val]
+  external stringify: Js.t('a) => string = "stringify";
+};
+
 module DataTransfer = {
   type dropEffect = string;
 
