@@ -1,1 +1,2 @@
 /image/*    https://s.put.re/:splat   200
+/*          /index.html               200
