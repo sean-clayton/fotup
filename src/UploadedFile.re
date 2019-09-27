@@ -145,10 +145,10 @@ let make = (~upload: Api.upload) => {
       {switch (upload.extension) {
        | x when x->isImageFile =>
          <Link
-           className=Styles.uploadFile href={"/i" ++ upload.link->stripLink}>
+           className=Styles.uploadFile href={"/i/" ++ upload.link->stripLink}>
            <img
              className=Styles.uploadFileImage
-             src={origin ++ upload.link->stripLink}
+             src={origin ++ "/" ++ upload.link->stripLink}
            />
          </Link>
        | x when x->isVideoFile =>
@@ -162,7 +162,7 @@ let make = (~upload: Api.upload) => {
       <input
         className=Styles.input
         readOnly=true
-        value={origin ++ upload.link->stripLink}
+        value={origin ++ "/" ++ upload.link->stripLink}
         onClick=handleCopy
       />
       <DeleteButton deleteUrl={upload.deleteLink} />
