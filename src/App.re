@@ -117,9 +117,7 @@ let make = () => {
       (state, action) =>
         switch (action) {
         | Initialize =>
-          Js.log("Initializing app");
           let uploads = deserializeUploads->Belt.List.fromArray;
-          Js.log(uploads);
           {...state, uploads};
         | StartDragging => {...state, dragging: true}
         | StopDragging => {...state, dragging: false}
@@ -255,7 +253,7 @@ let make = () => {
   };
 
   switch (url.path) {
-  | ["image", imageFilename, ..._] =>
+  | ["i", imageFilename, ..._] =>
     <main className=Styles.main> <ImageView imageFilename /> </main>
   | _ =>
     <main

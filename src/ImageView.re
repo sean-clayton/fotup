@@ -29,6 +29,7 @@ module Styles = {
 let make = (~imageFilename) => {
   let imagePath =
     Environment.imageHostPath->Js.Undefined.toOption->Belt.Option.getExn
+    ++ "/"
     ++ imageFilename;
   <div className=Styles.container>
     <a className=Styles.imageContainer href=imagePath>

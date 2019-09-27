@@ -126,7 +126,17 @@ module DeleteButton = {
   };
 };
 
-let stripLink = Js.String.replace("https://s.put.re/", "");
+let stripLink = s =>
+  s
+  |> Js.String.replace("https://s.put.re", "")
+  |> Js.String.replace("image/", "");
+
+let appOrigin = Webapi.Dom.(window->Window.location->Location.origin);
+
+let origin =
+  Utils.Environment.imageHostPath
+  ->Js.Undefined.toOption
+  ->Belt.Option.getWithDefault(appOrigin);
 
 [@react.component]
 let make = (~upload: Api.upload) => {
@@ -135,11 +145,11 @@ let make = (~upload: Api.upload) => {
       {switch (upload.extension) {
        | x when x->isImageFile =>
          <Link
-           className=Styles.uploadFile
-           href={
-             [|"image", upload.link->stripLink|] |> Js.Array.joinWith("/")
-           }>
-           <img className=Styles.uploadFileImage src={upload.link} />
+           className=Styles.uploadFile href={"/i" ++ upload.link->stripLink}>
+           <img
+             className=Styles.uploadFileImage
+             src={origin ++ upload.link->stripLink}
+           />
          </Link>
        | x when x->isVideoFile =>
          <video className=Styles.uploadFile controls=true>
@@ -152,7 +162,7 @@ let make = (~upload: Api.upload) => {
       <input
         className=Styles.input
         readOnly=true
-        value={upload.link}
+        value={origin ++ upload.link->stripLink}
         onClick=handleCopy
       />
       <DeleteButton deleteUrl={upload.deleteLink} />
