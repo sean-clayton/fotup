@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
-  const x = "service-worker.js";
+  const x = "/service-worker.js";
   navigator.serviceWorker
     .register(x)
     .then(function(registration) {
