@@ -129,6 +129,7 @@ module DeleteButton = {
 let stripLink = s =>
   s
   |> Js.String.replace("https://s.put.re", "")
+  |> Js.String.replace("https://fotup.app/image", "")
   |> Js.String.replace("image/", "");
 
 let appOrigin = Webapi.Dom.(window->Window.location->Location.origin);
