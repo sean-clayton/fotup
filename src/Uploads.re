@@ -14,14 +14,14 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~uploads) => {
+let make = (~uploads, ~removeFile) => {
   switch (uploads) {
   | [] => ReasonReact.null
   | _ =>
     <ul className=Styles.listContainer>
       {uploads
        |> List.map((upload: Api.upload) =>
-            <UploadedFile upload key={upload.name} />
+            <UploadedFile removeFile upload key={upload.name} />
           )
        |> Array.of_list
        |> ReasonReact.array}

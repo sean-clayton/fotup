@@ -6,12 +6,12 @@ module Styles = {
       display(grid),
       unsafe(
         "gridTemplateAreas",
-        {|"upload url"
-          "upload delete-link"|},
+        {|"upload url url url"
+          "upload delete-link cancel-link ."|},
       ),
       gridGap(1.0->rem),
       unsafe("gridTemplateRows", "min-content 1fr"),
-      gridTemplateColumns([1.0->fr, 1.0->fr]),
+      gridTemplateColumns([1.0->fr, 8.0->rem, 8.0->rem, 1.0->fr]),
       minHeight(16.->rem),
       height(33.33->vh),
       maxHeight(32.->rem),
@@ -26,10 +26,14 @@ module Styles = {
             "gridTemplateAreas",
             {|"upload"
               "url"
-              "delete-link"|},
+              "delete-link"
+              "cancel-link"|},
           ),
           unsafe("gridTemplateColumns", "1fr"),
-          unsafe("gridTemplateRows", "1fr min-content min-content"),
+          unsafe(
+            "gridTemplateRows",
+            "1fr min-content min-content min-content",
+          ),
         ],
       ),
     ]);
@@ -86,15 +90,32 @@ module Styles = {
     ]);
 
   let infoLink =
-    style([unsafe("gridArea", "delete-link"), color("63e2ff"->hex)]);
+    style([
+      unsafe("gridArea", "delete-link"),
+      color("63e2ff"->hex),
+      background(rgba(0, 0, 0, 0.333)),
+      fontSize(1.0->em),
+      border(zero, none, transparent),
+      cursor(`pointer),
+      padding(0.5->rem),
+      borderRadius(3->px),
+    ]);
+
+  let cancelLink =
+    merge([infoLink, style([unsafe("gridArea", "cancel-link")])]);
+
+  let confirmLink =
+    merge([infoLink, style([background("f11"->hex), color(white)])]);
 
   let input =
     style([
       unsafe("gridArea", "url"),
       fontSize(1.0->rem),
       padding(0.5->rem),
+      borderRadius(3->px),
       border(zero, none, transparent),
       display(block),
+      cursor(`pointer),
       color(white),
       background(rgba(0, 0, 0, 0.333)),
     ]);
@@ -116,11 +137,50 @@ let handleCopy = e => {
 };
 
 module DeleteButton = {
+  type state =
+    | NotAsked
+    | Asked;
+
   [@react.component]
-  let make = (~deleteUrl) => {
-    <a className=Styles.infoLink href=deleteUrl>
-      {"Delete" |> ReasonReact.string}
-    </a>;
+  let make = (~upload, ~removeFile) => {
+    let (state, setState) = React.useState(() => NotAsked);
+
+    let className =
+      switch (state) {
+      | NotAsked => Styles.infoLink
+      | Asked => Styles.confirmLink
+      };
+
+    let handleCancelRemove = e => {
+      e->ReactEvent.Mouse.preventDefault;
+      setState(_ => NotAsked);
+    };
+
+    let handleClick = e => {
+      e->ReactEvent.Mouse.preventDefault;
+      switch (state) {
+      | NotAsked => setState(_ => Asked)
+      | Asked =>
+        removeFile(upload);
+        ();
+      };
+    };
+
+    <>
+      <button className onClick=handleClick>
+        {switch (state) {
+         | NotAsked => "Delete file?"->ReasonReact.string
+         | Asked => "Delete file"->ReasonReact.string
+         }}
+      </button>
+      {switch (state) {
+       | NotAsked => React.null
+       | Asked =>
+         <button className=Styles.cancelLink onClick=handleCancelRemove>
+           "Cancel"->React.string
+         </button>
+       }}
+    </>;
   };
 };
 
@@ -142,7 +202,7 @@ let origin =
   ->Belt.Option.getWithDefault(appOrigin);
 
 [@react.component]
-let make = (~upload: Api.upload) => {
+let make = (~upload: Api.upload, ~removeFile) => {
   <li className=Styles.listItem>
     <div className=Styles.uploadWrapper>
       {switch (upload.extension) {
@@ -169,7 +229,7 @@ let make = (~upload: Api.upload) => {
         value={origin ++ "/" ++ upload.link->stripLink}
         onClick=handleCopy
       />
-      <DeleteButton deleteUrl={upload.deleteLink} />
+      <DeleteButton upload removeFile />
     </div>
   </li>;
 };

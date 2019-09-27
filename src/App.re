@@ -31,6 +31,7 @@ type action =
   | StopDragging
   | StartUploading
   | FinishedUploading
+  | RemoveFile(Api.upload)
   | AddFile(Api.upload)
   | UploadFailed
   | UploadProgress(float);
@@ -134,6 +135,13 @@ let make = () => {
             uploadFailed: true,
             uploadProgress: 0.0,
           }
+        | RemoveFile(upload) =>
+          let newState = {
+            ...state,
+            uploads: state.uploads->Belt.List.keep(up => upload != up),
+          };
+          serializeUploads(newState.uploads);
+          newState;
         | AddFile(upload) =>
           let newState = {...state, uploads: [upload, ...state.uploads]};
           serializeUploads(newState.uploads);
@@ -209,6 +217,11 @@ let make = () => {
     };
   };
 
+  let removeFile = (upload: Api.upload) => {
+    dispatch(RemoveFile(upload));
+    Api.deleteFile(upload.deleteLink);
+  };
+
   let handlePaste = e => {
     e->ReactEvent.Clipboard.preventDefault;
     let data =
@@ -277,7 +290,7 @@ let make = () => {
         dragging={state.dragging}
         handleInputChange
       />
-      <Uploads uploads={state.uploads} />
+      <Uploads removeFile uploads={state.uploads} />
       <Footer />
     </main>
   };

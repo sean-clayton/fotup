@@ -13,6 +13,10 @@ let uploadFile = (~onUploadProgress=?, file: Webapi.File.t) => {
   };
 };
 
+let deleteFile = deleteUrl => {
+  Axios.get(deleteUrl);
+};
+
 [@bs.deriving jsConverter]
 type upload = {
   originalName: string,

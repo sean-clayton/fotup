@@ -25,8 +25,8 @@ module Styles = {
 
   let fileInput =
     style([
-      width(0.1 |> pxFloat),
-      height(0.1 |> pxFloat),
+      width(0.1->pxFloat),
+      height(0.1->pxFloat),
       opacity(0.1),
       overflow(hidden),
       position(absolute),
@@ -41,10 +41,10 @@ module Styles = {
           alignItems(center),
           justifyContent(center),
           backgroundColor(hex("606060")),
-          border(2 |> px, solid, rgba(255, 255, 255, 0.5)),
-          borderRadius(3 |> px),
-          height(10.0 |> rem),
-          marginBottom(1.0 |> rem),
+          border(2->px, solid, rgba(255, 255, 255, 0.5)),
+          borderRadius(3->px),
+          height(10.0->rem),
+          marginBottom(1.0->rem),
         ],
       ),
       selector(":disabled + label", disabled),
