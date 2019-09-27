@@ -20,7 +20,7 @@ module Styles = {
       textAlign(initial),
       flex(`num(1.0)),
       media(
-        "(max-width: 480px)",
+        "(max-width: 768px)",
         [
           unsafe(
             "gridTemplateAreas",
@@ -58,7 +58,9 @@ module Styles = {
       unsafe("objectFit", "contain"),
       display(block),
       height(100.0->pct),
-      width(100.0->pct),
+      maxHeight(100.0->pct),
+      maxWidth(100.0->pct),
+      margin2(~v=zero, ~h=auto),
     ]);
 
   let listItem =
@@ -75,7 +77,7 @@ module Styles = {
         borderBottom(0->px, none, transparent),
       ]),
       media(
-        "(min-width: 480px)",
+        "(min-width: 768px)",
         [marginBottom(zero), borderBottom(0->px, none, transparent)],
       ),
     ]);
