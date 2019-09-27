@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: fotup.app
+Token: 42a2b979021a9a89623ae6245c9701271c8198f7a2f3a9d1307f83540b991a81
