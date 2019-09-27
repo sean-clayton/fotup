@@ -24,8 +24,6 @@ module Styles = {
     ]);
 };
 
-let component = ReasonReact.statelessComponent("Footer");
-
 let date = Js.Date.make()->Js.Date.getFullYear->int_of_float->string_of_int;
 
 [@react.component]

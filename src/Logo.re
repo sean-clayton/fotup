@@ -25,8 +25,6 @@ module Styles = {
   let text = style([textTransform(uppercase), fontWeight(extraBold)]);
 };
 
-let component = ReasonReact.statelessComponent("Logo");
-
 [@react.component]
 let make = () =>
   <header className=Styles.header>

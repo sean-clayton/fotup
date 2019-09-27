@@ -106,8 +106,6 @@ let videoExtensions = [".mp4", ".webm"];
 let isImageFile = x => List.exists(y => y == x, imageExtensions);
 let isVideoFile = x => List.exists(y => y == x, videoExtensions);
 
-let component = ReasonReact.statelessComponent("UploadedFile");
-
 let handleCopy = e => {
   e->ReactEvent.Mouse.preventDefault;
   e->ReactEvent.Mouse.persist;
@@ -128,8 +126,12 @@ module DeleteButton = {
 
 let stripLink = s =>
   s
-  |> Js.String.replace("https://s.put.re", "")
-  |> Js.String.replace("https://fotup.app/image", "")
+  |> Js.String.replace(
+       Utils.Environment.imageHostPath
+       ->Js.Undefined.toOption
+       ->Belt.Option.getExn,
+       "",
+     )
   |> Js.String.replace("image/", "");
 
 let appOrigin = Webapi.Dom.(window->Window.location->Location.origin);
@@ -146,7 +148,8 @@ let make = (~upload: Api.upload) => {
       {switch (upload.extension) {
        | x when x->isImageFile =>
          <Link
-           className=Styles.uploadFile href={"/i/" ++ upload.link->stripLink}>
+           className=Styles.uploadFile
+           href={"/view/" ++ upload.link->stripLink}>
            <img
              className=Styles.uploadFileImage
              src={origin ++ "/" ++ upload.link->stripLink}
@@ -154,7 +157,7 @@ let make = (~upload: Api.upload) => {
          </Link>
        | x when x->isVideoFile =>
          <video className=Styles.uploadFile controls=true>
-           <source src={upload.link} />
+           <source src={origin ++ "/" ++ upload.link->stripLink} />
            {"I'm sorry; your browser doesn't support HTML5 video in WebM with VP8/VP9 or MP4 with H.264."
             |> ReasonReact.string}
          </video>

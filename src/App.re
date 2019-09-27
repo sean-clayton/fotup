@@ -253,8 +253,14 @@ let make = () => {
   };
 
   switch (url.path) {
-  | ["i", imageFilename, ..._] =>
-    <main className=Styles.main> <ImageView imageFilename /> </main>
+  | ["view", mediaFilename, ..._] =>
+    <main className=Styles.main>
+      <MediaView mediaFilename mediaType=Types.Media.Image />
+    </main>
+  | ["player", mediaFilename, ..._] =>
+    <main className=Styles.main>
+      <MediaView mediaFilename mediaType=Types.Media.Video />
+    </main>
   | _ =>
     <main
       onDragEnter=handleDragEnter
