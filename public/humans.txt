@@ -1,5 +1,5 @@
 /* TEAM */
 Name: S. P. O. Clayton
-Site: https://www.seanclayton.me
+Site: https://www.sean.wtf
 Twitter: @seanaverage
 Location: Louisville, KY, USA
