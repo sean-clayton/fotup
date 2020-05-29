@@ -14,7 +14,7 @@
     "clean": "rimraf dist lib/* .cache .merlin src/**/*.bs.js"
   },
   "author": "Sean-Patrick Ortencio Clayton",
-  "license": "ISC",
+  "license": "0BSD",
   "staticPath": "public",
   "cache": {
     "strategy": "inject",
