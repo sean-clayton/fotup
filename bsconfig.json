@@ -4,7 +4,13 @@
     "dir": "src",
     "subdirs": true
   },
-  "bs-dependencies": ["reason-react", "bs-css", "bs-axios", "bs-webapi"],
+  "bs-dependencies": [
+    "reason-react",
+    "bs-css",
+    "bs-css-emotion",
+    "bs-axios",
+    "bs-webapi"
+  ],
   "reason": {
     "react-jsx": 3
   },

@@ -25,7 +25,7 @@ module Styles = {
       p,
       style([
         fontSize(px(12)),
-        color(rgba(255, 255, 255, 0.2)),
+        color(rgba(255, 255, 255, 0.5)),
         fontWeight(extraLight),
         textShadow(Shadow.text(~x=zero, ~y=zero, ~blur=zero, transparent)),
       ]),

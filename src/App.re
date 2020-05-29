@@ -14,6 +14,16 @@ module Styles = {
       justifyContent(center),
       textAlign(center),
     ]);
+
+  let alertIcon =
+    style([
+      display(`block),
+      height(20->px),
+      width(20->px),
+      marginRight(0.5->rem),
+    ]);
+
+  let alertTitle = style([marginRight(0.5->rem)]);
 };
 
 [@bs.deriving jsConverter]
@@ -283,6 +293,26 @@ let make = () => {
       onPaste=handlePaste
       className=Styles.main>
       <Logo />
+      <Alert>
+        <svg
+          className=Styles.alertIcon
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p>
+          <span className=Styles.alertTitle>
+            <strong>
+              "Warning! Uploading is not currently working."->string
+            </strong>
+          </span>
+          <span> "We are looking into alternative solutions."->string </span>
+        </p>
+      </Alert>
       <UploadForm
         uploading={state.uploading}
         uploadFailed={state.uploadFailed}
